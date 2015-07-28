@@ -57,7 +57,7 @@ app.use(methodOverride());
 
 //require('./middlewares/request-logger')(app);
 
-//require('./config/routes')(app);
+require('./config/routes')(app);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

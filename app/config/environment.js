@@ -21,7 +21,7 @@ var config = {
     port: 3000,
     db: {
       'driver': 'mongoose',
-      'url': 'mongodb://localhost:27017/test',
+      'url': 'mongodb://localhost:27017/DefectSystem',
       'username': '',
       'password': '',
       'db': 'skeleton_dev',

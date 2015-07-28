@@ -36,12 +36,13 @@ module.exports = function(app) {
 	APIRouter.modelMapping = {};
 
 	APIRouter.get('/', function(req, res, next) {
+		
 		res.sendStatus(200);
 	});
 
 	// user routes
 
-	 APIRouter.get('/users', UserController.findAll);
+	//APIRouter.get('/users', UserController.findAll);
 	// APIRouter.post('/users', UserController.create);
 	// APIRouter.get('/users/:userId', UserController.find);
 	// APIRouter.put('/users/:userId', UserController.update);

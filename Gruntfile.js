@@ -43,26 +43,26 @@ module.exports = function(grunt) {
         }
       }
     },
-    //'node-inspector': {
-    //  custom: {
-    //    options: {
-    //      'web-port': 1337,
-    //      'web-host': 'localhost',
-    //      'debug-port': 5858,
-    //      'save-live-edit': true,
-    //      'no-preload': true,
-    //      'stack-trace-limit': 50,
-    //      'hidden': []
-    //    }
-    //  }
-    //},
-    //concurrent: {
-    //  default: ['nodemon'],
-    //  debug: ['nodemon', 'node-inspector'],
-    //  options: {
-    //    logConcurrentOutput: true
-    //  }
-    //},
+    'node-inspector': {
+     custom: {
+       options: {
+         'web-port': 1337,
+         'web-host': 'localhost',
+         'debug-port': 5858,
+         'save-live-edit': true,
+         'no-preload': true,
+         'stack-trace-limit': 50,
+         'hidden': []
+       }
+     }
+    },
+    concurrent: {
+     default: ['nodemon'],
+     debug: ['nodemon', 'node-inspector'],
+     options: {
+       logConcurrentOutput: true
+     }
+    },
     env: {
       test: {
         NODE_ENV: process.env.NODE_ENV || 'test'
@@ -85,7 +85,7 @@ module.exports = function(grunt) {
   grunt.option('force', true);
 
   // Default task(s).
-  grunt.registerTask('default', ['lint', 'concurrent:default']);
+  grunt.registerTask('default', ['concurrent:default']);
 
   // Debug task.
   grunt.registerTask('debug', ['lint', 'concurrent:debug']);
