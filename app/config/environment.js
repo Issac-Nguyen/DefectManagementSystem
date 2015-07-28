@@ -11,14 +11,15 @@ var baseConfig = {
     username: 'linhquang1986@gmail.com',
     password: '1234',
     from: 'quang@kwifi.vn'
-  }
+  },
+  secretJWT: 'secretDefectSystem'
 };
 
 
 var config = {
   development: {
     root: rootPath,
-    port: 3000,
+    port: 8888,
     db: {
       'driver': 'mongoose',
       'url': 'mongodb://localhost:27017/DefectSystem',

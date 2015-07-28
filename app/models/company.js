@@ -14,7 +14,6 @@ var CompanySchema = new Schema({
 	},
 	Address: {
 		type: String,
-		index: true,
 		required: true
 	},
 	RegisterOn: {
@@ -66,11 +65,11 @@ var CompanySchema = new Schema({
 	},
 	DefectPictureIsNeeded: {
 		type: Boolean,
-		default: yes
+		default: true
 	},
 	DefectDescIsNeeded: {
 		type: Boolean,
-		default: yes
+		default: true
 	},
 	CreatedBy: {
 		type: ObjectId,
@@ -101,12 +100,14 @@ var CompanySchema = new Schema({
 // };
 
 CompanySchema.pre('save', function(next) {
-	this.UpdatedOn = Date.now;
-	if ( !this.CreatedOn ) {
-    	this.CreatedOn = now;
-  	}
+	if (!this['CreatedOn']) {
+        this['CreatedOn'] = this['UpdatedOn'] = new Date;
+      } else if (this.isModified()) {
+        this['UpdatedOn'] = new Date;
+      }
 	next();
 });
+
 
 CompanySchema.set('toJSON', {
 	getters: true,
