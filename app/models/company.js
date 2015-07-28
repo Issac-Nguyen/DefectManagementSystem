@@ -76,14 +76,14 @@ var CompanySchema = new Schema({
 	},
 	CreatedOn: {
 		type: Date,
-		default: Date.now
+		default: new Date
 	},
 	UpdatedBy: {
 		type: ObjectId,
 	},
 	UpdatedOn: {
 		type: Date,
-		default: Date.now
+		default: new Date
 	},
 }, {
 	read: 'nearest',

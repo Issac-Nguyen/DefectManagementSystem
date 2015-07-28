@@ -74,14 +74,14 @@ var DefectSchema = new Schema({
 	},
 	CreatedOn: {
 		type: Date,
-		default: Date.now
+		default: new Date
 	},
 	UpdatedBy: {
 		type: ObjectId,
 	},
 	UpdatedOn: {
 		type: Date,
-		default: Date.now
+		default: new Date
 	},
 }, {
 	read: 'nearest',
@@ -89,10 +89,11 @@ var DefectSchema = new Schema({
 });
 
 DefectSchema.pre('save', function(next) {
-	this.UpdatedOn = Date.now;
-	if ( !this.CreatedOn ) {
-    	this.CreatedOn = now;
-  	}
+	if (!this['CreatedOn']) {
+        this['CreatedOn'] = this['UpdatedOn'] = new Date;
+      } else if (this.isModified()) {
+        this['UpdatedOn'] = new Date;
+      }
 	next();
 });
 
