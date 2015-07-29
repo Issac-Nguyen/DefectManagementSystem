@@ -35,11 +35,11 @@ var TopSchema = new Schema({
 	},
 	DefectPictureIsNeeded: {
 		type: Boolean,
-		default: yes
+		default: true
 	},
 	DefectDescIsNeeded: {
 		type: Boolean,
-		default: yes
+		default: true
 	},
 	CreatedBy: {
 		type: ObjectId,

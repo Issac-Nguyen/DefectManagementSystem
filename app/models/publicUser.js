@@ -15,11 +15,6 @@ var PublicUserSchema = new Schema({
 		index: true,
 		required: true
 	},
-	Name: {
-		type: String,
-		index: true,
-		required: true
-	},
 	BuildingID: {
 		type: ObjectId,
 		required: true
@@ -27,7 +22,7 @@ var PublicUserSchema = new Schema({
 	salt: String,
 	hashedPassword: {
 		type: String,
-	}
+	},
 	Name: {
 		type: String,
 	},

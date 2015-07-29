@@ -1,5 +1,5 @@
 'use strict';
-var User = require('../app/models/user'),
+var Category = require('../app/models/category'),
 	async = require('async'),
 	_ = require('lodash'),
 	fs = require('fs'),
@@ -9,37 +9,32 @@ var User = require('../app/models/user'),
 	mongoUri = settings.db.url,
 	mongoose = require('mongoose').connect(mongoUri);
 
-var defaultPass = '1234';
-var defaultSalt = '';
-var md5 = function(value) {
-	return crypto.createHash('md5').update(value).digest('hex');
-};
 
-var encryptPassword = function(password, salt) {
-	salt = salt || '';
-	return md5(md5(password) + salt);
-};
-
-var users = [{
-	username: 'admin',
-	password: encryptPassword(defaultPass, defaultSalt),
-	role: 'ADMIN',
-	email: 'linhquang1986@gmail.com'
+var categorys = [{
+	_id: mongoose.Types.ObjectId('55b887653a865464149b0a1d'),
+	Name: 'Category 1',
+	CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0e'),
+	Description: 'Description of Category 1'
+}, {
+	_id: mongoose.Types.ObjectId('55b887653a865464149b0a1e'),
+	Name: 'Category 2',
+	CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0f'),
+	Description: 'Description of Category 2'
 }];
 
 
-async.each(users, function(user, callback) {
-	User.model.remove({
-		username: user.username
+async.each(categorys, function(category, callback) {
+	Category.model.remove({
+		_id: category._id
 	}, function(err) {
 		if (err) console.log(err);
-		var u = new User.model();
-		u.username = user.username;
-		u.email = user.email;
-		u.password = '1234';
-		u.save(function(err) {
+		var c = new Category.model();
+		c.Name = category.Name;
+		c.CompanyID = category.CompanyID;
+		c.Description = category.Description;
+		c.save(function(err) {
 			if (err) console.log(err);
-			console.log('Created user:' + u.username);
+			console.log('Created category:' + c.Name);
 			callback();
 		});
 	});

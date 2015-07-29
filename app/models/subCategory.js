@@ -9,7 +9,7 @@ var SubCategorySchema = new Schema({
 		index: true,
 		required: true
 	},
-	CompanyID: {
+	CategoryID: {
 		type: ObjectId,
 		index: true,
 		required: true

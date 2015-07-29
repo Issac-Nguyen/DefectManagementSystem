@@ -11,9 +11,11 @@ var Company = require('../app/models/company'),
 
 
 var companys = [{
+	_id: mongoose.Types.ObjectId("55b87dba0f20318c025fcf0e"),
 	Name: 'Company 1',
 	Address: 'address company 1'
 }, {
+	_id: mongoose.Types.ObjectId("55b87dba0f20318c025fcf0f"),
 	Name: 'Company 2',
 	Address: 'address company 2'
 }];
@@ -21,10 +23,11 @@ var companys = [{
 
 async.each(companys, function(company, callback) {
 	Company.model.remove({
-		Name: company.name
+		_id: company._id
 	}, function(err) {
 		if (err) console.log(err);
 		var c = new Company.model();
+		c._id = company._id;
 		c.Name = company.Name;
 		c.Address = company.Address;
 		c.save(function(err) {

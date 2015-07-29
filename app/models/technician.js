@@ -15,11 +15,6 @@ var TechnicianSchema = new Schema({
 		index: true,
 		required: true
 	},
-	Name: {
-		type: String,
-		index: true,
-		required: true
-	},
 	BuildingID: {
 		type: ObjectId,
 		required: true
@@ -32,7 +27,7 @@ var TechnicianSchema = new Schema({
 	hashedPassword: {
 		type: String,
 		required: true
-	}
+	},
 	Name: {
 		type: String,
 	},

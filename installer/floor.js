@@ -1,5 +1,5 @@
 'use strict';
-var User = require('../app/models/user'),
+var Floor = require('../app/models/floor'),
 	async = require('async'),
 	_ = require('lodash'),
 	fs = require('fs'),
@@ -9,37 +9,31 @@ var User = require('../app/models/user'),
 	mongoUri = settings.db.url,
 	mongoose = require('mongoose').connect(mongoUri);
 
-var defaultPass = '1234';
-var defaultSalt = '';
-var md5 = function(value) {
-	return crypto.createHash('md5').update(value).digest('hex');
-};
 
-var encryptPassword = function(password, salt) {
-	salt = salt || '';
-	return md5(md5(password) + salt);
-};
-
-var users = [{
-	username: 'admin',
-	password: encryptPassword(defaultPass, defaultSalt),
-	role: 'ADMIN',
-	email: 'linhquang1986@gmail.com'
+var floors = [{
+	Name: 'Floor 1',
+	BuildingID: mongoose.Types.ObjectId('55b886ad6130e64413e2336f'),
+	Description: 'Description of Floor 1'
+}, {
+	_id: mongoose.Types.ObjectId('55b886ad6130e64413e23370'),
+	Name: 'Floor 2',
+	BuildingID: mongoose.Types.ObjectId('55b887653a865464149b0a1e'),
+	Description: 'Description of Floor 2'
 }];
 
 
-async.each(users, function(user, callback) {
-	User.model.remove({
-		username: user.username
+async.each(floors, function(floor, callback) {
+	Floor.model.remove({
+		Name: floor.name
 	}, function(err) {
 		if (err) console.log(err);
-		var u = new User.model();
-		u.username = user.username;
-		u.email = user.email;
-		u.password = '1234';
-		u.save(function(err) {
+		var c = new Floor.model();
+		c.Name = floor.Name;
+		c.BuildingID = floor.BuildingID;
+		c.Description = floor.Description;
+		c.save(function(err) {
 			if (err) console.log(err);
-			console.log('Created user:' + u.username);
+			console.log('Created floor:' + c.Name);
 			callback();
 		});
 	});

@@ -31,9 +31,6 @@ var BuildingSchema = new Schema({
 	InChargeNo: {
 		type: String,
 	},
-	InChargeNo: {
-		type: String,
-	},
 	DateCompletedOn: {
 		type: Date,
 	},
@@ -48,6 +45,7 @@ var BuildingSchema = new Schema({
 	},
 	TotalSchedule: {
 		type: Number,
+		default: 0
 	},	
 	Softcopy: {
 		type: Array,

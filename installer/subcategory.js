@@ -1,5 +1,5 @@
 'use strict';
-var User = require('../app/models/user'),
+var SubCategory = require('../app/models/subcategory'),
 	async = require('async'),
 	_ = require('lodash'),
 	fs = require('fs'),
@@ -9,37 +9,31 @@ var User = require('../app/models/user'),
 	mongoUri = settings.db.url,
 	mongoose = require('mongoose').connect(mongoUri);
 
-var defaultPass = '1234';
-var defaultSalt = '';
-var md5 = function(value) {
-	return crypto.createHash('md5').update(value).digest('hex');
-};
 
-var encryptPassword = function(password, salt) {
-	salt = salt || '';
-	return md5(md5(password) + salt);
-};
-
-var users = [{
-	username: 'admin',
-	password: encryptPassword(defaultPass, defaultSalt),
-	role: 'ADMIN',
-	email: 'linhquang1986@gmail.com'
+var subcategorys = [{
+	Name: 'SubCategory 1',
+	CategoryID: mongoose.Types.ObjectId('55b887653a865464149b0a1d'),
+	Description: 'Description of SubCategory 1'
+}, {
+	_id: mongoose.Types.ObjectId('55b887653a865464149b0a1e'),
+	Name: 'SubCategory 2',
+	CategoryID: mongoose.Types.ObjectId('55b887653a865464149b0a1e'),
+	Description: 'Description of SubCategory 2'
 }];
 
 
-async.each(users, function(user, callback) {
-	User.model.remove({
-		username: user.username
+async.each(subcategorys, function(subcategory, callback) {
+	SubCategory.model.remove({
+		Name: subcategory.name
 	}, function(err) {
 		if (err) console.log(err);
-		var u = new User.model();
-		u.username = user.username;
-		u.email = user.email;
-		u.password = '1234';
-		u.save(function(err) {
+		var c = new SubCategory.model();
+		c.Name = subcategory.Name;
+		c.CategoryID = subcategory.CategoryID;
+		c.Description = subcategory.Description;
+		c.save(function(err) {
 			if (err) console.log(err);
-			console.log('Created user:' + u.username);
+			console.log('Created subcategory:' + c.Name);
 			callback();
 		});
 	});

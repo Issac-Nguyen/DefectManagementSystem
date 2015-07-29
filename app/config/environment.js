@@ -12,7 +12,8 @@ var baseConfig = {
     password: '1234',
     from: 'quang@kwifi.vn'
   },
-  secretJWT: 'secretDefectSystem'
+  secretJWT: 'secretDefectSystem',
+  URLNotAuthenAPI: ['/api/getTokenAndUpdateNotifi', '/api/getInitInformation']
 };
 
 

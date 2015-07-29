@@ -9,35 +9,41 @@ var Building = require('../app/models/building'),
 	mongoUri = settings.db.url,
 	mongoose = require('mongoose').connect(mongoUri);
 
-var defaultPass = '1234';
-var defaultSalt = '';
-var md5 = function(value) {
-	return crypto.createHash('md5').update(value).digest('hex');
-};
+	var _buildingNo = 1688;
 
-var encryptPassword = function(password, salt) {
-	salt = salt || '';
-	return md5(md5(password) + salt);
-};
+	function getBuildingNo() {
+		_buildingNo += 1;
+		return _buildingNo;
+	}
 
 var buildings = [{
-	Name: 'Building1',
-	
-}, ];
+	_id: mongoose.Types.ObjectId('55b886ad6130e64413e2336f'),
+	Name: 'Building 1',
+	CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0e'),
+	BuildingNo: _buildingNo,
+	Address: 'address building 1',
+}, {
+	_id: mongoose.Types.ObjectId('55b886ad6130e64413e23370'),
+	Name: 'Building 2',
+	CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0f'),
+	BuildingNo: getBuildingNo(),
+	Address: 'address building 1',
+}];
 
 
-async.each(users, function(user, callback) {
-	User.model.remove({
-		username: user.username
+async.each(buildings, function(building, callback) {
+	Building.model.remove({
+		Name: building._id
 	}, function(err) {
 		if (err) console.log(err);
-		var u = new User.model();
-		u.username = user.username;
-		u.email = user.email;
-		u.password = '1234';
-		u.save(function(err) {
+		var c = new Building.model();
+		c.Name = building.Name;
+		c.CompanyID = building.CompanyID;
+		c.BuildingNo = building.BuildingNo;
+		c.Address = building.Address;
+		c.save(function(err) {
 			if (err) console.log(err);
-			console.log('Created user:' + u.username);
+			console.log('Created building:' + c.Name);
 			callback();
 		});
 	});
