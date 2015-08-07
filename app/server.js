@@ -45,13 +45,13 @@ app.disable('x-powered-by');
 
 app.use(express.static(environment.root + '/public'));
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.use(methodOverride());
 
-//require('./models')(app);
-//require('./services')(app);
+require('./models')(app);
+require('./services')(app);
 
 //require('./config/passport')(app);
 
@@ -65,26 +65,7 @@ app.use(function(req, res, next) {
     next(err);
 });
 
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err,
-            title: 'error'
-        });
-    });
 
-}
-
-app.use(function(err, req, res) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {},
-        title: 'error'
-    });
-});
 
 
 app.stop = function() {

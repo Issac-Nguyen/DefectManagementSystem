@@ -8,7 +8,16 @@ var express = require('express'),
     async = require('async');
 module.exports = function(app) {
     var BuildingController = require('../controllers/building-controller')(app),
+        CategoryController = require('../controllers/category-controller')(app),
+        SubCategoryController = require('../controllers/subcategory-controller')(app),
+        DepartmentController = require('../controllers/department-controller')(app),
+        SubDepartmentController = require('../controllers/subdepartment-controller')(app),
+        FloorController = require('../controllers/floor-controller')(app),
+        ZoneController = require('../controllers/zone-controller')(app),
+        SubZoneController = require('../controllers/subzone-controller')(app),
         AuthenticationController = require('../controllers/auth-controller')(app),
+        PublicUserController = require('../controllers/publicuser-controller')(app),
+        DefectController = require('../controllers/defect-controller')(app),
         secretJWT = app.environment.secretJWT;
 
     var authenAPIRequest = function(req, res, next) {
@@ -20,6 +29,7 @@ module.exports = function(app) {
                 jwt.verify(token, secretJWT, function(err, decoded) {
                     if (err)
                         next(err);
+                    req.decoded = decoded;
                     next();
                 });
             }
@@ -76,12 +86,23 @@ module.exports = function(app) {
             var tokenNotification = bodyRequest.tokenNotification;
             var authorization = req.headers.authorization;
             if (UUID) {
-                var token = jwt.sign({
+                var obj = {
                     UUID: UUID
-                }, secretJWT);
-                res.json({
-                    token: token
+                };
+                PublicUserController.addNewUser(obj, function(err, user) {
+                    if (err)
+                        return next(err);
+                    var token = jwt.sign({
+                        UUID: UUID
+                    }, secretJWT);
+
+
+
+                    res.json({
+                        token: token
+                    });
                 });
+
             } else if (authorization) {
                 var token = authorization.split(' ')[1];
                 console.log(token);
@@ -114,22 +135,99 @@ module.exports = function(app) {
                 });
             },
             category: function(callback) {
-                callback(null, 'category');
+                CategoryController.findAllWithCallback(function(err, categorys) {
+                    if (err)
+                        return callback(err);
+                    callback(null, categorys);
+                });
             },
             subcategory: function(callback) {
-                callback(null, 'subcategory');
+                SubCategoryController.findAllWithCallback(function(err, subcategorys) {
+                    if (err)
+                        return callback(err);
+                    callback(null, subcategorys);
+                });
+            },
+            department: function(callback) {
+                DepartmentController.findAllWithCallback(function(err, departments) {
+                    if (err)
+                        return callback(err);
+                    callback(null, departments);
+                });
+            },
+            subdepartment: function(callback) {
+                SubDepartmentController.findAllWithCallback(function(err, subdepartments) {
+                    if (err)
+                        return callback(err);
+                    callback(null, subdepartments);
+                });
             },
             floor: function(callback) {
-                callback(null, 'floor');
+                FloorController.findAllWithCallback(function(err, floors) {
+                    if (err)
+                        return callback(err);
+                    callback(null, floors);
+                });
             },
             zone: function(callback) {
-                callback(null, 'zone');
-            }
+                ZoneController.findAllWithCallback(function(err, zones) {
+                    if (err)
+                        return callback(err);
+                    callback(null, zones);
+                });
+            },
+            subzone: function(callback) {
+                SubZoneController.findAllWithCallback(function(err, subzones) {
+                    if (err)
+                        return callback(err);
+                    callback(null, subzones);
+                });
+            },
         }, function(err, results) {
             if (err)
                 next(err);
             res.json(results);
         });
+    });
+
+    APIRouter.post('/uploadDefect', function(req, res, next) {
+        var UUID = req.decoded.UUID;
+        PublicUserController.findByUUID(UUID, function(err, user) {
+            if (err)
+                return next(err);
+            var objectID = user._id;
+            var arrDefect = JSON.parse(req.body.data);
+            async.map(arrDefect, function(item, cb) {
+                console.log(item);
+                item.CreatedBy = objectID;
+                item.idDefect = item.id;
+                DefectController.add(item, function(err, defect) {
+                    if (err)
+                        return cb(err);
+                    cb(null, defect.idDefect.toString());
+                });
+            }, function(err, results) {
+                if (err)
+                    return next(err);
+                console.log(results);
+                res.json(results);
+            })
+        });
+
+        // PublicUserController.addNewUser(req.body, function(err, user) {
+        //     if(err)
+        //         return next(err);
+        //     console.log(user);
+        //     res.json(user);
+        // })
+
+        // res.json({
+        //     result: 'success'
+        // });
+    });
+
+    APIRouter.post('/GetStatusDefectFromTimestamp', function(req, res, next) {
+
     });
 
     //APIRouter.get('/users', UserController.findAll);

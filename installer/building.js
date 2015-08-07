@@ -33,10 +33,12 @@ var buildings = [{
 
 async.each(buildings, function(building, callback) {
 	Building.model.remove({
-		Name: building._id
+		_id: building._id
 	}, function(err) {
 		if (err) console.log(err);
 		var c = new Building.model();
+		if (building._id)
+            c._id = building._id;
 		c.Name = building.Name;
 		c.CompanyID = building.CompanyID;
 		c.BuildingNo = building.BuildingNo;

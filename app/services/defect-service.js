@@ -9,6 +9,11 @@ module.exports = function(app) {
 		}, callback);
 	};
 
+	DefectService.add = function(data, cb) {
+		var newDefect = new app.models.Defect(data);
+		newDefect.save(cb);
+	}
+
 	return {
 		service: DefectService,
 		serviceName: 'Defect'

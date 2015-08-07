@@ -4,6 +4,10 @@ var mongoose = require('mongoose'),
 	ObjectId = Schema.ObjectId,
 	crypto = require('crypto');
 
+var encryptPassword = function(password, salt) {
+	return crypto.createHash('md5').update(password + salt).digest('hex');
+};
+
 var PublicUserSchema = new Schema({
 	UUID: {
 		type: String,
@@ -13,11 +17,11 @@ var PublicUserSchema = new Schema({
 	TokenNotifi: {
 		type: String,
 		index: true,
-		required: true
+		// required: true
 	},
 	BuildingID: {
 		type: ObjectId,
-		required: true
+		// required: true
 	},
 	salt: String,
 	hashedPassword: {

@@ -9,6 +9,10 @@ var CategorySchema = new Schema({
 		index: true,
 		required: true
 	},
+	BuildingID: {
+		type: ObjectId,
+		index: true,
+	},
 	CompanyID: {
 		type: ObjectId,
 		index: true,

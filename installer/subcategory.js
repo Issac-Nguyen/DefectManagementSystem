@@ -24,7 +24,7 @@ var subcategorys = [{
 
 async.each(subcategorys, function(subcategory, callback) {
 	SubCategory.model.remove({
-		Name: subcategory.name
+		Name: subcategory.Name
 	}, function(err) {
 		if (err) console.log(err);
 		var c = new SubCategory.model();
