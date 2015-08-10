@@ -17,5 +17,10 @@ module.exports = function(app) {
     DefectController.add = function(data, callback) {
         DefectService.add(data, callback);
     }
+
+    DefectController.findAllFromDateWithCallback = function(dateFrom, callback) {
+        DefectService.findAllFromDate(dateFrom, callback);
+    }
+
     return DefectController;
 };

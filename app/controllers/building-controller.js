@@ -23,12 +23,11 @@ module.exports = function(app) {
 	};
 
 	BuildingController.findAllWithCallback = function(callback) {
-		BuildingService.findAll(function(err, buildings) {
-			if (err) {
-				return callback(err);
-			}
-			return callback(null, buildings);
-		});
+		BuildingService.findAll(callback);
+	};
+
+	BuildingController.findAllFromDateWithCallback = function(dateFrom, callback) {
+		BuildingService.findAllFromDate(dateFrom, callback);
 	};
 
 	return BuildingController;

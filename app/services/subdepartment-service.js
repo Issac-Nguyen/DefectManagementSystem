@@ -14,6 +14,14 @@ module.exports = function(app) {
 		}, callback);
 	};
 
+	SubDepartmentService.findAllFromDate = function(dateFrom, callback) {
+		return app.models.SubDepartment.find({
+            UpdatedOn: {
+                $gte: dateFrom
+            }
+        }, callback);
+	};
+
 	return {
 		service: SubDepartmentService,
 		serviceName: 'SubDepartment'

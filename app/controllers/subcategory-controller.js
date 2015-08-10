@@ -14,12 +14,11 @@ module.exports = function(app) {
 	};
 
 	SubCategoryController.findAllWithCallback = function(callback) {
-		SubCategoryService.findAll(function(err, subsubcategorys) {
-			if (err) {
-				return callback(err);
-			}
-			return callback(null, subsubcategorys);
-		});
+		SubCategoryService.findAll(callback);
+	};
+
+	SubCategoryController.findAllFromDateWithCallback = function(dateFrom, callback) {
+		SubCategoryService.findAllFromDate(dateFrom, callback);
 	};
 
 	return SubCategoryController;

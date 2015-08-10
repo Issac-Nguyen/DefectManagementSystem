@@ -14,6 +14,10 @@ module.exports = function(app) {
 		}, callback);
 	};
 
+	BuildingService.findAllFromDate = function(dateFrom, cb) {
+		return app.models.Building.find({UpdatedOn: {$gte: dateFrom}}, cb);
+	}
+
 	return {
 		service: BuildingService,
 		serviceName: 'Building'

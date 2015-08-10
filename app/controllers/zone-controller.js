@@ -14,12 +14,11 @@ module.exports = function(app) {
 	};
 
 	ZoneController.findAllWithCallback = function(callback) {
-		ZoneService.findAll(function(err, zones) {
-			if (err) {
-				return callback(err);
-			}
-			return callback(null, zones);
-		});
+		ZoneService.findAll(callback);
+	};
+
+	ZoneController.findAllFromDateWithCallback = function(dateFrom, callback) {
+		ZoneService.findAllFromDate(dateFrom, callback);
 	};
 
 	return ZoneController;

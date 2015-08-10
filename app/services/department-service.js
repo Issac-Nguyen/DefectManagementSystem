@@ -10,8 +10,11 @@ module.exports = function(app) {
 	};
 
 	DepartmentService.findAll = function(callback) {
-		return app.models.Department.find({
-		}, callback);
+		return app.models.Department.find(callback);
+	};
+
+	DepartmentService.findAllFromDate = function(dateFrom, callback) {
+		return app.models.Department.find({UpdatedOn: {$gte: dateFrom}}, callback);
 	};
 
 	return {

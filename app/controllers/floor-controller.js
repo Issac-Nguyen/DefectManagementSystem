@@ -14,12 +14,11 @@ module.exports = function(app) {
 	};
 
 	FloorController.findAllWithCallback = function(callback) {
-		FloorService.findAll(function(err, floors) {
-			if (err) {
-				return callback(err);
-			}
-			return callback(null, floors);
-		});
+		FloorService.findAll(callback);
+	};
+
+	FloorController.findAllFromDateWithCallback = function(dateFrom, callback) {
+		FloorService.findAllFromDate(dateFrom, callback);
 	};
 
 	return FloorController;

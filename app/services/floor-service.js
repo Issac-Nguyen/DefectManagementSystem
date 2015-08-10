@@ -10,8 +10,11 @@ module.exports = function(app) {
 	};
 
 	FloorService.findAll = function(callback) {
-		return app.models.Floor.find({
-		}, callback);
+		return app.models.Floor.find(callback);
+	};
+
+	FloorService.findAllFromDate = function(dateFrom, callback) {
+		return app.models.Floor.find({UpdatedOn: {$gte: dateFrom}}, callback);
 	};
 
 	return {

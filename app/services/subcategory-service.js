@@ -10,8 +10,11 @@ module.exports = function(app) {
 	};
 
 	SubCategoryService.findAll = function(callback) {
-		return app.models.SubCategory.find({
-		}, callback);
+		return app.models.SubCategory.find(callback);
+	};
+
+	SubCategoryService.findAllFromDate = function(dateFrom, callback) {
+		return app.models.SubCategory.find({UpdatedOn: {$gte: dateFrom}}, callback);
 	};
 
 	return {

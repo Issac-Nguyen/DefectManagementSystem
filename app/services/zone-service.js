@@ -14,6 +14,10 @@ module.exports = function(app) {
 		}, callback);
 	};
 
+	ZoneService.findAllFromDate = function(dateFrom, callback) {
+		return app.models.Zone.find({UpdatedOn: {$gte: dateFrom}}, callback);
+	};
+
 	return {
 		service: ZoneService,
 		serviceName: 'Zone'

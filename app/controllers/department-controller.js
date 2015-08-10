@@ -14,12 +14,11 @@ module.exports = function(app) {
 	};
 
 	DepartmentController.findAllWithCallback = function(callback) {
-		DepartmentService.findAll(function(err, departments) {
-			if (err) {
-				return callback(err);
-			}
-			return callback(null, departments);
-		});
+		DepartmentService.findAll(callback);
+	};
+
+	DepartmentController.findAllFromDateWithCallback = function(dateFrom, callback) {
+		DepartmentService.findAllFromDate(dateFrom, callback);
 	};
 
 	return DepartmentController;
