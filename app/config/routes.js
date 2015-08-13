@@ -44,7 +44,7 @@ module.exports = function(app) {
     app.all('*', function(req, res, next) {
         res.header('Access-Control-Allow-Credentials', true);
         res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-        res.header('Access-Control-Allow-Headers', 'x-prototype-version,x-requested-with,content-type,accept');
+        res.header('Access-Control-Allow-Headers', 'x-prototype-version,x-requested-with,content-type,accept,Authorization');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         if ('OPTIONS' === req.method) {
             res.sendStatus(200);
@@ -240,7 +240,7 @@ module.exports = function(app) {
         var dateGet = req.body.timestamp;
         if (!dateGet)
             return res.sendStatus(500);
-        dateGet = new Date(Number(dateGet) * 1000);
+        dateGet = new Date(Number(dateGet));
         console.log(dateGet);
         PublicUserController.findByUUID(UUID, function(err, user) {
             if (err)
