@@ -44,8 +44,8 @@ app.use(helmet.nosniff());
 app.use(helmet.ienoopen());
 app.disable('x-powered-by');
 
-app.use('/upload/defects', express.static(__dirname + '/upload/defects'));
-app.use(multer({dest: './upload/defects/'}));
+app.use('/upload/defects', express.static(environment.root + '/upload/defects'));
+app.use(multer({dest: './upload/defects/'}).single('defectImg'));
 
 app.use(express.static(environment.root + '/public'));
 
