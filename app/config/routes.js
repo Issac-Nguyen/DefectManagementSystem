@@ -5,6 +5,10 @@ var express = require('express'),
     GenericRouter = express.Router(),
     unless = require('express-unless'),
     jwt = require('jsonwebtoken'),
+    multer = require('multer'),
+    path = require('path'),
+    fs = require('fs'),
+    mime = require('mime'),
     async = require('async');
 module.exports = function(app) {
     var BuildingController = require('../controllers/building-controller')(app),
@@ -319,6 +323,59 @@ module.exports = function(app) {
 
     });
 
+
+    var storageDefectImg = multer.diskStorage({
+        destination: './upload/defects/',
+        filename: function(req, file, cb) {
+            var UUID;
+            if (req.decoded)
+                UUID = req.decoded.UUID;
+            else
+                UUID = '123';
+            cb(null, UUID + '-' + file.originalname);
+        }
+    });
+
+    var upload = multer({
+        storage: storageDefectImg
+    });
+
+    var type = upload.single('fileDefect');
+
+
+    APIRouter.post('/noauthen-uploadImageDefect', type, function(req, res, next) {
+
+        /** When using the "single"
+      data come in "req.file" regardless of the attribute "name". **/
+        console.log(req.file);
+        //   var tmp_path = req.file.path;
+
+
+        //   /** The original name of the uploaded file
+        // stored in the variable "originalname". **/
+        //   var target_path = 'upload/defects' + req.file.originalname;
+
+        //   /** A better way to copy the uploaded file. **/
+        //   var src = fs.createReadStream(tmp_path);
+        //   var dest = fs.createWriteStream(target_path);
+        //   src.pipe(dest);
+        //   src.on('end', function() {
+        res.json({
+            'result': 'success'
+        });
+        //   });
+        //   src.on('error', function(err) {
+        //       res.json(err);
+        //   });
+
+    });
+
+    APIRouter.get('/noauthen-downloadImageResolve/:fileName', function(req, res, next) {
+        console.log(req.params);
+        var file = app.environment.root + '/upload/defects/123-1439836397955.jpg';
+        console.log(file);
+        res.download(file);
+    });
     //APIRouter.get('/users', UserController.findAll);
     // APIRouter.post('/users', UserController.create);
     // APIRouter.get('/users/:userId', UserController.find);

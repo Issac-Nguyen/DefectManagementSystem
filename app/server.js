@@ -14,8 +14,8 @@ var express = require('express'),
     busboy = require('connect-busboy'),
     session = require('express-session'),
     MongoStore = require('connect-mongo')(session),
-    environment = require('./config/environment'),
-    multer = require('multer');
+    environment = require('./config/environment');
+    // multer = require('multer');
 
 app.environment = environment;
 
@@ -44,8 +44,8 @@ app.use(helmet.nosniff());
 app.use(helmet.ienoopen());
 app.disable('x-powered-by');
 
-app.use('/upload/defects', express.static(environment.root + '/upload/defects'));
-app.use(multer({dest: './upload/defects/'}).single('defectImg'));
+// app.use('/upload/defects', express.static(environment.root + '/upload/defects'));
+// app.use(multer({dest: './upload/defects/'}).single('defectImg'));
 
 app.use(express.static(environment.root + '/public'));
 
