@@ -370,6 +370,33 @@ module.exports = function(app) {
 
     });
 
+    APIRouter.post('/uploadImageDefect', type, function(req, res, next) {
+
+        /** When using the "single"
+      data come in "req.file" regardless of the attribute "name". **/
+        console.log(req.file);
+        //   var tmp_path = req.file.path;
+
+
+        //   /** The original name of the uploaded file
+        // stored in the variable "originalname". **/
+        //   var target_path = 'upload/defects' + req.file.originalname;
+
+        //   /** A better way to copy the uploaded file. **/
+        //   var src = fs.createReadStream(tmp_path);
+        //   var dest = fs.createWriteStream(target_path);
+        //   src.pipe(dest);
+        //   src.on('end', function() {
+        res.json({
+            'result': 'success'
+        });
+        //   });
+        //   src.on('error', function(err) {
+        //       res.json(err);
+        //   });
+
+    });
+
     APIRouter.get('/noauthen-downloadImageResolve/:fileName', function(req, res, next) {
         console.log(req.params);
         var file = app.environment.root + '/upload/defects/123-1439836397955.jpg';
