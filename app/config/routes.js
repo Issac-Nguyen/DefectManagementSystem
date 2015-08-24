@@ -22,6 +22,7 @@ module.exports = function(app) {
         AuthenticationController = require('../controllers/auth-controller')(app),
         PublicUserController = require('../controllers/publicuser-controller')(app),
         DefectController = require('../controllers/defect-controller')(app),
+        TechnicianController = require('../controllers/technician-controller')(app),
         secretJWT = app.environment.secretJWT;
 
     var authenAPIRequest = function(req, res, next) {
@@ -397,18 +398,79 @@ module.exports = function(app) {
 
     });
 
-    APIRouter.get('/noauthen-downloadImageResolve/:fileName', function(req, res, next) {
-        console.log(req.params);
-        var file = app.environment.root + '/upload/defects/123-1439836397955.jpg';
-        console.log(file);
-        res.download(file);
-    });
-    //APIRouter.get('/users', UserController.findAll);
-    // APIRouter.post('/users', UserController.create);
-    // APIRouter.get('/users/:userId', UserController.find);
-    // APIRouter.put('/users/:userId', UserController.update);
-    // APIRouter.delete('/users/:userId', UserController.destroy);
-    // APIRouter.post('/users/setgroups', UserController.setGroups);
-    // APIRouter.modelMapping.users = 'User';
+    API.post('noauthen-loginTechnicianAndUpdateNotifi', function(req, res, next) {
+            var bodyRequest = req.body;
+            var authorization = req.headers.authorization;
+            if (authorization) {
+                var token = authorization.split(' ')[1];
+                if (token) {
+                    jwt.verify(token, secretJWT, function(err, decoded) {
+                            if (err)
+                                next(err);
+                            res.json(decoded);
+                        }
+                    }
+                } else {
+                    var UUID = bodyRequest.UUID;
+                    var tokenNotification = bodyRequest.tokenNotification;
 
-};
+                }
+                if (bodyRequest) {
+                    var UUID = bodyRequest.UUID;
+                    var tokenNotification = bodyRequest.tokenNotification;
+                    var authorization = req.headers.authorization;
+                    if (UUID) {
+                        var obj = {
+                            UUID: UUID
+                        };
+                        PublicUserController.addNewUser(obj, function(err, user) {
+                            if (err)
+                                return next(err);
+                            var token = jwt.sign({
+                                UUID: UUID
+                            }, secretJWT);
+
+
+
+                            res.json({
+                                token: token
+                            });
+                        });
+
+                    } else if (authorization) {
+                        var token = authorization.split(' ')[1];
+                        console.log(token);
+                        if (token) {
+                            jwt.verify(token, secretJWT, function(err, decoded) {
+                                if (err)
+                                    next(err);
+                                res.json(decoded);
+                            });
+                        } else {
+                            res.json({
+                                result: 'Error'
+                            });
+                        }
+                    } else {
+                        res.json({
+                            result: 'Error'
+                        });
+                    }
+                }
+            });
+
+        APIRouter.get('/noauthen-downloadImageResolve/:fileName', function(req, res, next) {
+            console.log(req.params);
+            var file = app.environment.root + '/upload/defects/123-1439836397955.jpg';
+            console.log(file);
+            res.download(file);
+        });
+        //APIRouter.get('/users', UserController.findAll);
+        // APIRouter.post('/users', UserController.create);
+        // APIRouter.get('/users/:userId', UserController.find);
+        // APIRouter.put('/users/:userId', UserController.update);
+        // APIRouter.delete('/users/:userId', UserController.destroy);
+        // APIRouter.post('/users/setgroups', UserController.setGroups);
+        // APIRouter.modelMapping.users = 'User';
+
+    };
