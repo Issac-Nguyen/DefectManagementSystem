@@ -3,24 +3,37 @@ var lodash = require('lodash');
 module.exports = function(app) {
     var TechnicianService = {};
 
-	TechincianService.findByName = function(username, callback) {
-		return app.models.Technician.findOne({
-			username: username
-		}, callback);
-	};
+    TechnicianService.findByUserName = function(username, callback) {
+        return app.models.Technician.findOne({
+            Username: username
+        }, callback);
+    };
 
-	TechnicianService.login = function(username, password, callback) {
-		app.models.Techincian.findOne({username: username}, function(err, technician) {
-			if(err)
-				return callback(err);
-			if(technician.checkPassword(password)) {
-				callback(null, technician);
-			}
-		});
-	}
+    TechnicianService.update = function(id, object, callback) {
+        return app.models.Technician.update({ _id: id }, { $set: object}, callback);
+    };
 
-	return {
-		service: TechnicianService,
-		serviceName: 'Techincian'
-	};
+    TechnicianService.login = function(username, password, callback) {
+        console.log(username);
+        app.models.Technician.findOne({
+            Username: username
+        }, function(err, technician) {
+            if (err)
+                return callback(err);
+            if (technician) {
+                if (technician.checkPassword(password)) {
+                    callback(null, technician);
+                } else {
+                    callback(new Error('authentication fail'));
+                }
+            } else {
+                callback(new Error('Not Found!'));
+            }
+        });
+    }
+
+    return {
+        service: TechnicianService,
+        serviceName: 'Technician'
+    };
 };
