@@ -19,6 +19,10 @@ var PublicUserSchema = new Schema({
 		index: true,
 		// required: true
 	},
+	Platform: {
+		type: String,
+		required: true
+	},
 	BuildingID: {
 		type: ObjectId,
 		// required: true

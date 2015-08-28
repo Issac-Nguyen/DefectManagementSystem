@@ -85,47 +85,58 @@ module.exports = function(app) {
     // user routes
     // 
     APIRouter.post('/noauthen-getTokenAndUpdateNotifi', function(req, res, next) {
-        var bodyRequest = req.body;
-        if (bodyRequest) {
-            var UUID = bodyRequest.UUID;
-            var tokenNotification = bodyRequest.tokenNotification;
-            var authorization = req.headers.authorization;
-            if (UUID) {
-                var obj = {
-                    UUID: UUID
-                };
-                PublicUserController.addNewUser(obj, function(err, user) {
+
+        var authorization = req.headers.authorization;
+        if (authorization) {
+            var token = authorization.split(' ')[1];
+            console.log(token);
+            if (token) {
+                jwt.verify(token, secretJWT, function(err, decoded) {
                     if (err)
                         return next(err);
-                    var token = jwt.sign({
-                        UUID: UUID
-                    }, secretJWT);
-
-
-
-                    res.json({
-                        token: token
-                    });
+                    upsertPulicUser(req, res, false);
                 });
-
-            } else if (authorization) {
-                var token = authorization.split(' ')[1];
-                console.log(token);
-                if (token) {
-                    jwt.verify(token, secretJWT, function(err, decoded) {
-                        if (err)
-                            next(err);
-                        res.json(decoded);
-                    });
-                } else {
-                    res.json({
-                        result: 'Error'
-                    });
-                }
             } else {
                 res.json({
                     result: 'Error'
                 });
+            }
+        } else {
+            upsertPulicUser(req, res, true);
+        }
+
+        function upsertPulicUser(req, res, send) {
+            var bodyRequest = req.body;
+            if (bodyRequest) {
+                var UUID = bodyRequest.UUID;
+                var tokenNotification = bodyRequest.tokenNotification;
+                var platform = bodyRequest.platform
+                if (UUID) {
+                    var obj = {
+                        UUID: UUID,
+                        TokenNotifi: tokenNotification,
+                        Platform: platform
+                    };
+                    PublicUserController.addNewUser(obj, function(err, user) {
+                        if (err)
+                            return next(err);
+                        if (send) {
+                            var token = jwt.sign({
+                                UUID: UUID
+                            }, secretJWT);
+
+                            res.json({
+                                token: token
+                            });
+                        } else {
+                            res.json({
+                                result: 'success'
+                            })
+                        }
+
+                    });
+
+                }
             }
         }
     });
@@ -250,6 +261,10 @@ module.exports = function(app) {
         PublicUserController.findByUUID(UUID, function(err, user) {
             if (err)
                 return next(err);
+            if (user == null)
+                return res.json({
+                    result: 'Not Found'
+                });
             var objectID = user._id;
             async.parallel({
                 building: function(callback) {
