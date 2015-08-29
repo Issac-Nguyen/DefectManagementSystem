@@ -1,14 +1,14 @@
 'use strict';
-require('datejs');
+var moment = require('moment');
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 var DefectSchema = new Schema({
-	idDefect: {
-		type: String,
-		required: true
-	},
+    idDefect: {
+        type: String,
+        required: true
+    },
     BuildingID: {
         type: ObjectId,
         required: true
@@ -94,43 +94,18 @@ var DefectSchema = new Schema({
 });
 
 DefectSchema.pre('validate', function(next) {
-    this['BuildingID'] = mongoose.Types.ObjectId(this['Building_id']);
-    this['CategoryID'] = mongoose.Types.ObjectId(this['Category_id']);
-    this['SubCategoryID'] = mongoose.Types.ObjectId(this['SubCategory_id']);
-    this['ZoneID'] = mongoose.Types.ObjectId(this['Zone_id']);
-    this['FloorID'] = mongoose.Types.ObjectId(this['Floor_id']);
-    if (!this['CreatedBy']) {
-        this['ReportedBy'] = this['CreatedBy'] = this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
-    } else if (this.isModified()) {
-        this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
-    }
-
-    this['ReportOn'] = Date.parse('July 8th, 2004, 10:30 PM');
-    this['ExpectedCompleteDate'] = Date.parse('July 8th, 2004, 10:30 PM');
-    if (this['Arr_imageDefect']) {
-        var arrDefectPicture = this['Arr_imageDefect'];
-        var DefectPictureList = [];
-        var DefectDescriptionList = [];
-        for (var i = 0; i < arrDefectPicture.length; i++) {
-            var item = arrDefectPicture[i];
-            DefectPictureList.push(item.pic);
-            DefectDescriptionList.push(item.des);
+    if (this.isNew) {
+        
+        this['BuildingID'] = mongoose.Types.ObjectId(this['BuildingID']);
+        this['CategoryID'] = mongoose.Types.ObjectId(this['CategoryID']);
+        this['SubCategoryID'] = mongoose.Types.ObjectId(this['SubCategoryID']);
+        this['ZoneID'] = mongoose.Types.ObjectId(this['ZoneID']);
+        this['FloorID'] = mongoose.Types.ObjectId(this['FloorID']);
+        if (!this['CreatedBy']) {
+            this['ReportedBy'] = this['CreatedBy'] = this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
+        } else if (this.isModified()) {
+            this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
         }
-        this['DefectPictureList'] = DefectPictureList;
-        this['DefectDescriptionList'] = DefectDescriptionList;
-    }
-
-    if (this['Arr_imageResolve']) {
-        var arrResolvePicture = this['Arr_imageResolve'];
-        var ResolvedPictureList = [];
-        var ResolvedDescriptionList = [];
-        for (var i = 0; i < arrResolvePicture.length; i++) {
-            var item = arrResolvePicture[i];
-            ResolvedPictureList.push(item.pic);
-            ResolvedDescriptionList.push(item.des);
-        }
-        this['ResolvedPictureList'] = ResolvedPictureList;
-        this['ResolvedDescriptionList'] = ResolvedDescriptionList;
     }
 
     next();

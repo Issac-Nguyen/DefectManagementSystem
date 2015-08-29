@@ -232,7 +232,7 @@ module.exports = function(app) {
             }, function(err, results) {
                 if (err)
                     return next(err);
-                console.log(results);
+                // console.log(results);
                 res.json(results);
             })
         });
@@ -348,7 +348,7 @@ module.exports = function(app) {
                 UUID = req.decoded.UUID;
                 username = req.decoded.username;
             }
-            var defectID = req.params.defectID;
+            var defectID = req.body.defectID;
             cb(null, defectID + '-' + file.originalname);
         }
     });
