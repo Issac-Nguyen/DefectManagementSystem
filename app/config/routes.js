@@ -23,6 +23,7 @@ module.exports = function(app) {
         PublicUserController = require('../controllers/publicuser-controller')(app),
         DefectController = require('../controllers/defect-controller')(app),
         TechnicianController = require('../controllers/technician-controller')(app),
+        NotificationController = require('../controllers/notification-controller')(app),
         secretJWT = app.environment.secretJWT;
 
     var authenAPIRequest = function(req, res, next) {
@@ -226,13 +227,39 @@ module.exports = function(app) {
                 item.idDefect = item.id;
                 DefectController.add(item, function(err, defect) {
                     if (err)
-                        return cb(err);
+                        return cb(null, '');
+                    //Send notification
+                    var buildingID = defect.BuildingID;
+                    var categoryID = defect.CategoryID;
+                    var condition = {
+                        BuildingList: {
+                            "$in": [buildingID]
+                        },
+                        CategoryList: {
+                            "$in": [categoryID]
+                        }
+                    };
+                    TechnicianController.find(condition, function(err, technicians) {
+                        if (err)
+                            return next(err);
+                        console.log(technicians);
+                        for (var i = 0; i < technicians.length; i++) {
+                            var technician = technicians[i];
+                            NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                                alert: "You have new Defect",
+                                // payload: {
+                                //     'messageFrom': Date.now().toString()
+                                // }
+                            });
+                        }
+                    });
                     cb(null, defect.idDefect.toString());
                 });
             }, function(err, results) {
                 if (err)
                     return next(err);
                 // console.log(results);
+
                 res.json(results);
             })
         });
@@ -339,6 +366,104 @@ module.exports = function(app) {
 
     });
 
+    APIRouter.post('/getInfoFromTimestampOfTechnician', function(req, res, next) {
+        var username = req.decoded.username;
+        var dateGet = req.body.timestamp;
+        var UUID = req.body.UUID;
+        if (!dateGet)
+            return res.sendStatus(500);
+        dateGet = new Date(Number(dateGet));
+        console.log(dateGet);
+        TechnicianController.findByUserName(username, function(err, user) {
+            if (err)
+                return next(err);
+            console.log(user);
+            if (user == null)
+                return res.json({
+                    result: 'Not Found'
+                });
+            if (user.UUID != UUID)
+                return res.json({
+                    technician: {
+                        logout: true
+                    }
+                })
+            var BuildingList = user.BuildingList;
+            var CategoryList = user.CategoryList;
+            var objectID = user._id;
+            async.parallel({
+                building: function(callback) {
+                    BuildingController.findAllFromDateWithCallback(dateGet, function(err, buildings) {
+                        if (err)
+                            return callback(err);
+                        callback(null, buildings);
+                    });
+                },
+                category: function(callback) {
+                    CategoryController.findAllFromDateWithCallback(dateGet, function(err, categorys) {
+                        if (err)
+                            return callback(err);
+                        callback(null, categorys);
+                    });
+                },
+                subcategory: function(callback) {
+                    SubCategoryController.findAllFromDateWithCallback(dateGet, function(err, subcategorys) {
+                        if (err)
+                            return callback(err);
+                        callback(null, subcategorys);
+                    });
+                },
+                department: function(callback) {
+                    DepartmentController.findAllFromDateWithCallback(dateGet, function(err, departments) {
+                        if (err)
+                            return callback(err);
+                        callback(null, departments);
+                    });
+                },
+                subdepartment: function(callback) {
+                    SubDepartmentController.findAllFromDateWithCallback(dateGet, function(err, subdepartments) {
+                        if (err)
+                            return callback(err);
+                        callback(null, subdepartments);
+                    });
+                },
+                floor: function(callback) {
+                    FloorController.findAllFromDateWithCallback(dateGet, function(err, floors) {
+                        if (err)
+                            return callback(err);
+                        callback(null, floors);
+                    });
+                },
+                zone: function(callback) {
+                    ZoneController.findAllFromDateWithCallback(dateGet, function(err, zones) {
+                        if (err)
+                            return callback(err);
+                        callback(null, zones);
+                    });
+                },
+                subzone: function(callback) {
+                    SubZoneController.findAllFromDateWithCallback(dateGet, function(err, subzones) {
+                        if (err)
+                            return callback(err);
+                        callback(null, subzones);
+                    });
+                },
+                defect: function(callback) {
+                    DefectController.findAllFromDateAndRelateTechnicianWithCallback(dateGet, BuildingList, CategoryList, function(err, defects) {
+                        if (err)
+                            return callback(err);
+                        callback(null, defects);
+                    });
+                },
+            }, function(err, results) {
+                if (err)
+                    next(err);
+                res.json(results);
+            });
+        });
+
+    });
+
 
     var storageDefectImg = multer.diskStorage({
         destination: './upload/defects/',
@@ -414,44 +539,62 @@ module.exports = function(app) {
 
     });
 
-    APIRouter.post('/noauthen-loginTechnicianAndUpdateNotifi', function(req, res, next) {
+    APIRouter.post('/authenTechnicianAndUpdateInfo', function(req, res, next) {
         var bodyRequest = req.body;
-        var authorization = req.headers.authorization;
-        var tokenNotification = bodyRequest.tokenNotification;
-        if (authorization) {
-            var token = authorization.split(' ')[1];
-            if (token) {
-                jwt.verify(token, secretJWT, function(err, decoded) {
+        var tokenNotification = bodyRequest.tokenNotification || '';
+        var decoded = req.decoded;
+        var UUID = bodyRequest.UUID;
+        TechnicianController.findByUserName(decoded.username, function(err, technician) {
+            if (err)
+                return next(err);
+            if (technician.UUID != UUID) {
+                res.json({
+                    result: "You logged in a different device"
+                });
+            } else {
+                console.log(technician);
+                TechnicianController.update(technician.id, {
+                    TokenNotifi: tokenNotification
+                }, function(err, technician) {
                     if (err)
                         return next(err);
-                    // res.json(decoded);
-                    TechnicianController.findByUserName(decoded.username, function(err, technician) {
-                        if (err)
-                            return next(err);
-                        TechnicianController.update(technician.id, {
-                            TokenNotifi: tokenNotification
-                        }, function(err, technician) {
-                            if (err)
-                                return next(err);
-                            res.json({
-                                result: 'success'
-                            });
-                        });
+                    res.json({
+                        result: 'success'
                     });
                 });
             }
-        } else {
-            var UUID = bodyRequest.UUID;
-            var tokenNotification = bodyRequest.tokenNotification;
-            var username = bodyRequest.username;
-            var password = bodyRequest.password;
-            TechnicianController.login(username, password, function(err, technician) {
-                if (err)
-                    return next(err);
-                // TechnicianController.update(username, tokenNotification, function(err, technician) {
-                //     if (err)
-                //         return next(err);
-                //get token with sign username
+        });
+    });
+
+    APIRouter.post('/noauthen-loginTechnicianAndUpdateNotifi', function(req, res, next) {
+        console.log(app.environment.root);
+        var bodyRequest = req.body;
+        var UUID = bodyRequest.UUID;
+        var tokenNotification = bodyRequest.tokenNotification;
+        var username = bodyRequest.username;
+        var password = bodyRequest.password;
+        TechnicianController.login(username, password, function(err, technician) {
+            if (err)
+                return next(err);
+            // TechnicianController.update(username, tokenNotification, function(err, technician) {
+            //     if (err)
+            //         return next(err);
+            console.log(technician);
+            //get token with sign username
+            if (technician.UUID != UUID) {
+                console.log('UUID: ' + UUID)
+                //send Notification for previous technician
+                // NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                //     alert: "You logged in a new device.",
+                // });
+            }
+
+            var objSet = {
+                UUID: UUID,
+                TokenNotifi: tokenNotification,
+                Platform: bodyRequest.platform
+            }
+            TechnicianController.update(technician.id, objSet, function(err, t) {
                 var token = jwt.sign({
                     username: technician.Username
                 }, secretJWT);
@@ -459,9 +602,10 @@ module.exports = function(app) {
                 res.json({
                     token: token
                 });
-                // });
             });
-        }
+
+            // });
+        });
     });
 
     APIRouter.get('/noauthen-downloadImageResolve/:fileName', function(req, res, next) {

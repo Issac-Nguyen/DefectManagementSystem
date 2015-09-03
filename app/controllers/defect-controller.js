@@ -67,5 +67,9 @@ module.exports = function(app) {
         DefectService.findAllFromDate(dateFrom, callback);
     }
 
+    DefectController.findAllFromDateAndRelateTechnicianWithCallback = function(dateFrom, objBuilding, objCategory, callback) {
+        DefectService.findAllFromDateAndRelateTechnician(dateFrom, objBuilding, objCategory, callback);
+    }
+
     return DefectController;
 };

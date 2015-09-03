@@ -16,6 +16,10 @@ module.exports = function(app) {
         TechnicianService.update(id, object, cb);
     }
 
+    TechnicianController.find = function(condition, callback) {
+        TechnicianService.find(condition, callback);
+    }
+
 
 
     return TechnicianController;

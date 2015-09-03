@@ -19,6 +19,9 @@ var TechnicianSchema = new Schema({
         index: true,
         // required: true
     },
+    Platform: {
+        type: String
+    },
     BuildingID: {
         type: ObjectId,
         required: true

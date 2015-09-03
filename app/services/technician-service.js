@@ -15,6 +15,7 @@ module.exports = function(app) {
 
     TechnicianService.login = function(username, password, callback) {
         console.log(username);
+        console.log(password);
         app.models.Technician.findOne({
             Username: username
         }, function(err, technician) {
@@ -27,9 +28,13 @@ module.exports = function(app) {
                     callback(new Error('authentication fail'));
                 }
             } else {
-                callback(new Error('Not Found!'));
+                callback(new Error('Not Found any Technician!'));
             }
         });
+    }
+
+    TechnicianService.find = function(condition, callback) {
+        app.models.Technician.find(condition, callback);
     }
 
     return {

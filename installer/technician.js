@@ -11,18 +11,20 @@ var Technician = require('../app/models/technician'),
 
 
 var technicians = [{
-        BuildingID: mongoose.Types.ObjectId('55b886ad6130e64413e2336f'),
-        CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0e'),
-        Username: 'Technician1',
-        password: '123'
-    },
-    {
-        BuildingID: mongoose.Types.ObjectId('55b886ad6130e64413e23370'),
-        CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0f'),
-        Username: 'Technician2',
-        password: '123'
-    }
-]
+    BuildingID: mongoose.Types.ObjectId('55b886ad6130e64413e2336f'),
+    CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0e'),
+    Username: 'Technician1',
+    password: '123',
+    BuildingList: [mongoose.Types.ObjectId('55b886ad6130e64413e2336f')],
+    CategoryList: [mongoose.Types.ObjectId('55b887653a865464149b0a1d'), mongoose.Types.ObjectId('55b887653a865464149b0a1e')]
+}, {
+    BuildingID: mongoose.Types.ObjectId('55b886ad6130e64413e23370'),
+    CompanyID: mongoose.Types.ObjectId('55b87dba0f20318c025fcf0f'),
+    Username: 'Technician2',
+    password: '123',
+    BuildingList: [mongoose.Types.ObjectId('55b886ad6130e64413e23370')],
+    CategoryList: [mongoose.Types.ObjectId('55b887653a865464149b0a1d'), mongoose.Types.ObjectId('55b887653a865464149b0a1e')]
+}]
 
 
 async.each(technicians, function(technician, callback) {
@@ -35,9 +37,11 @@ async.each(technicians, function(technician, callback) {
         c.BuildingID = technician.BuildingID;
         c.CompanyID = technician.CompanyID;
         c.password = technician.password;
+        c.BuildingList = technician.BuildingList;
+        c.CategoryList = technician.CategoryList;
         c.save(function(err) {
-            if (err) 
-            	return callback(err);
+            if (err)
+                return callback(err);
             console.log('Created technician:' + c.Username);
             callback();
         });
