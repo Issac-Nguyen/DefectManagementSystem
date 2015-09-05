@@ -13,6 +13,10 @@ module.exports = function(app) {
 		});
 	};
 
+	FloorController.findByID = function(id, callback) {
+		FloorService.findByID(id, callback);
+	};
+
 	FloorController.findAllWithCallback = function(callback) {
 		FloorService.findAll(callback);
 	};

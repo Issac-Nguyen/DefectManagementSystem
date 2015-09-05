@@ -13,6 +13,10 @@ module.exports = function(app) {
 		});
 	};
 
+	CategoryController.findByID = function(id, callback) {
+		CategoryService.findByID(id, callback);
+	};
+
 	CategoryController.findAllWithCallback = function(callback) {
 		CategoryService.findAll(callback);
 	};

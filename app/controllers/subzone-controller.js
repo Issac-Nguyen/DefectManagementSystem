@@ -13,6 +13,10 @@ module.exports = function(app) {
         });
     };
 
+    SubZoneController.findByID = function(id, callback) {
+        SubZoneService.findByID(id, callback);
+    };
+
     SubZoneController.findAllWithCallback = function(callback) {
         SubZoneService.findAll(callback);
     }

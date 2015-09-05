@@ -22,6 +22,11 @@ module.exports = function(app) {
 		});
 	};
 
+
+	BuildingController.findByID = function(id, callback) {
+		BuildingService.findByID(id, callback);
+	};
+
 	BuildingController.findAllWithCallback = function(callback) {
 		BuildingService.findAll(callback);
 	};

@@ -35,6 +35,8 @@ module.exports = function(app) {
     }
 
     DefectService.findAllFromDateAndRelateTechnician = function(dateFrom, BuildingList, CategoryList, callback) {
+        console.log(BuildingList);
+        console.log(CategoryList);
         return app.models.Defect.find({
             UpdatedOn: {
                 $gte: dateFrom

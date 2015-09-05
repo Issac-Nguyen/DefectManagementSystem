@@ -377,7 +377,7 @@ module.exports = function(app) {
         TechnicianController.findByUserName(username, function(err, user) {
             if (err)
                 return next(err);
-            console.log(user);
+            // console.log(user);
             if (user == null)
                 return res.json({
                     result: 'Not Found'
@@ -458,11 +458,125 @@ module.exports = function(app) {
             }, function(err, results) {
                 if (err)
                     next(err);
-                res.json(results);
+                getFullDefect(results.defect, function(err, arrDefect) {
+                    if(err)
+                        return next(err);
+                    results.defect = arrDefect;
+                    console.log(results.defect);
+                    res.json(results);
+                });
+                // res.json(results);
             });
         });
-
     });
+
+    function getFullDefect(arrDefect, callback) {
+        var arrDefectResult = [];
+        if(arrDefect.length == 0)
+            return callback(null, arrDefect);
+        async.each(arrDefect, function(defect, cb1) {
+            async.parallel({
+                BuildingName: function(cb) {
+                    BuildingController.findByID(defect.BuildingID, function(err, building) {
+                        if (err)
+                            return cb(err);
+                        cb(null, building.Name);
+                    });
+                },
+                CategoryName: function(cb) {
+                    CategoryController.findByID(defect.CategoryID, function(err, category) {
+                        if (err)
+                            return cb(err);
+                        cb(null, category.Name);
+                    });
+                },
+                SubCategoryName: function(cb) {
+                    SubCategoryController.findByID(defect.SubCategoryID, function(err, subcategory) {
+                        if (err)
+                            return cb(err);
+                        cb(null, subcategory.Name);
+                    });
+                },
+                DepartmentName: function(cb) {
+                    DepartmentController.findByID(defect.DepartmentID, function(err, department) {
+                        if (err)
+                            return cb(err);
+                        cb(null, department.Name);
+                    });
+                },
+                SubDepartmentName: function(cb) {
+                    SubDepartmentController.findByID(defect.SubDepartmentID, function(err, department) {
+                        if (err)
+                            return cb(err);
+                        cb(null, department.Name);
+                    });
+                },
+                ZoneName: function(cb) {
+                    ZoneController.findByID(defect.ZoneID, function(err, zone) {
+                        if (err)
+                            return cb(err);
+                        cb(null, zone.Name);
+                    });
+                },
+                SubZoneName: function(cb) {
+                    SubZoneController.findByID(defect.SubZoneID, function(err, subzone) {
+                        if (err)
+                            return cb(err);
+                        cb(null, subzone.Name);
+                    });
+                },
+                FloorName: function(cb) {
+                    FloorController.findByID(defect.FloorID, function(err, floor) {
+                        if (err)
+                            return cb(err);
+                        cb(null, floor.Name);
+                    });
+                }
+            }, function(err, results) {
+                if (err)
+                    return cb1(err);
+                // console.log(results);
+                var defectNew = {};
+                defectNew.BuildingID = defect.BuildingID;
+                defectNew.BuildingName = results.BuildingName;
+                defectNew.CategoryID = defect.CategoryID;
+                defectNew.CategoryName = results.CategoryName;
+                defectNew.DepartmentID = defect.DepartmentID;
+                defectNew.DepartmentName = results.DepartmentName;
+                defectNew.SubCategoryID = defect.SubCategoryID;
+                defectNew.SubCategoryName = results.SubCategoryName;
+                defectNew.SubDepartmentID = defect.SubDepartmentID;
+                defectNew.SubDepartmentName = results.SubDepartmentName;
+                defectNew.idDefect = defect.idDefect;
+                defectNew.ZoneID = defect.ZoneID;
+                defectNew.ZoneName = results.ZoneName;
+                defectNew.SubZoneID = defect.SubZoneID;
+                defectNew.SubZoneName = results.SubZoneName;
+                defectNew.FloorID = defect.FloorID;
+                defectNew.FloorName = results.FloorName;
+                defectNew.UpdatedOn = defect.UpdatedOn;
+                defectNew.CreatedOn = defect.CreatedOn;
+                defectNew.ReportedOn = defect.ReportedOn;
+                defectNew.AcknowledgedBy = defect.AcknowledgedBy;
+                defectNew.DefectPictureList = defect.DefectPictureList;
+                defectNew.DefectDescriptionList = defect.DefectDescriptionList;
+                defectNew.ExpectedCompleteDate = defect.ExpectedCompleteDate;
+                defectNew.ResolvedPictureList = defect.ResolvedPictureList;
+                defectNew.ResolvedDescriptionList = defect.ResolvedDescriptionList;
+
+                console.log('defect:');
+                console.log(defectNew);
+
+                arrDefectResult.push(defectNew);
+                //call cb1 to next defect
+                cb1();
+            });
+        }, function(err) {
+            if (err)
+                return callback(err);
+            callback(null, arrDefectResult);
+        });
+    }
 
 
     var storageDefectImg = multer.diskStorage({
@@ -567,7 +681,6 @@ module.exports = function(app) {
     });
 
     APIRouter.post('/noauthen-loginTechnicianAndUpdateNotifi', function(req, res, next) {
-        console.log(app.environment.root);
         var bodyRequest = req.body;
         var UUID = bodyRequest.UUID;
         var tokenNotification = bodyRequest.tokenNotification;

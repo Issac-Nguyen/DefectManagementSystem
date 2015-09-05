@@ -13,6 +13,10 @@ module.exports = function(app) {
 		});
 	};
 
+	SubDepartmentController.findByID = function(id, callback) {
+		SubDepartmentService.findByID(id, callback);
+	};
+
 	SubDepartmentController.findAllWithCallback = function(callback) {
 		SubDepartmentService.findAll(callback);
 	};

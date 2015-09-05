@@ -13,6 +13,13 @@ var DefectSchema = new Schema({
         type: ObjectId,
         required: true
     },
+    DepartmentID: {
+        type: ObjectId,
+        // required: true
+    },
+    SubDepartmentID: {
+        type: ObjectId,
+    },
     CategoryID: {
         type: ObjectId,
         // required: true
@@ -21,6 +28,9 @@ var DefectSchema = new Schema({
         type: ObjectId,
     },
     ZoneID: {
+        type: ObjectId,
+    },
+    SubZoneID: {
         type: ObjectId,
     },
     FloorID: {
@@ -72,7 +82,7 @@ var DefectSchema = new Schema({
     },
     SendStatusTouserByNotificaiton: {
         type: Boolean,
-        default: false
+        default: true
     },
     CreatedBy: {
         type: ObjectId,
@@ -97,9 +107,12 @@ DefectSchema.pre('validate', function(next) {
     if (this.isNew) {
         
         this['BuildingID'] = mongoose.Types.ObjectId(this['BuildingID']);
+        this['DepartmentID'] = mongoose.Types.ObjectId(this['DepartmentID']);
+        this['SubDepartmentID'] = mongoose.Types.ObjectId(this['SubDepartmentID']);
         this['CategoryID'] = mongoose.Types.ObjectId(this['CategoryID']);
         this['SubCategoryID'] = mongoose.Types.ObjectId(this['SubCategoryID']);
         this['ZoneID'] = mongoose.Types.ObjectId(this['ZoneID']);
+        this['SubZoneID'] = mongoose.Types.ObjectId(this['SubZoneID']);
         this['FloorID'] = mongoose.Types.ObjectId(this['FloorID']);
         if (!this['CreatedBy']) {
             this['ReportedBy'] = this['CreatedBy'] = this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);

@@ -13,6 +13,10 @@ module.exports = function(app) {
 		});
 	};
 
+	DepartmentController.findByID = function(id, callback) {
+		DepartmentService.findByID(id, callback);
+	};
+
 	DepartmentController.findAllWithCallback = function(callback) {
 		DepartmentService.findAll(callback);
 	};

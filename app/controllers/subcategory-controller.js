@@ -13,6 +13,10 @@ module.exports = function(app) {
 		});
 	};
 
+	SubCategoryController.findByID = function(id, callback) {
+		SubCategoryService.findByID(id, callback);
+	};
+
 	SubCategoryController.findAllWithCallback = function(callback) {
 		SubCategoryService.findAll(callback);
 	};
