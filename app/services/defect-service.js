@@ -14,6 +14,10 @@ module.exports = function(app) {
         newDefect.save(cb);
     }
 
+    DefectService.updateWithCallback = function(condition, objSet, callback) {
+        return app.models.Defect.update(condition, { $set: objSet}, callback);
+    }
+
     DefectService.upsert = function(data, cb) {
         var newDefect = new app.models.Defect(data);
         // newDefect.save(cb);

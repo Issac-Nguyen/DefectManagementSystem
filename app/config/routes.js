@@ -243,6 +243,18 @@ module.exports = function(app) {
                         if (err)
                             return next(err);
                         console.log(technicians);
+                        //Update SentTechnicianList of defect
+                        var arrTechnician = [];
+                        for (var i = 0; i < technicians.length; i++) {
+                            arrTechnician.push('/' + technicians.Username + '/');
+                        }
+                        var condition = {
+                            _id: defect.id
+                        };
+                        var objSet = {
+                            SentTechnicianList: arrTechnician
+                        };
+                        DefectController.updateWithCallback(condition, objSet, function() {});
                         for (var i = 0; i < technicians.length; i++) {
                             var technician = technicians[i];
                             NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
@@ -382,12 +394,16 @@ module.exports = function(app) {
                 return res.json({
                     result: 'Not Found'
                 });
-            if (user.UUID != UUID)
+
+            if (user.UUID != UUID) {
+                console.log(UUID);
+                console.log('user: ' + user.UUID);
                 return res.json({
                     technician: {
                         logout: true
                     }
                 })
+            }
             var BuildingList = user.BuildingList;
             var CategoryList = user.CategoryList;
             var objectID = user._id;
@@ -459,10 +475,10 @@ module.exports = function(app) {
                 if (err)
                     next(err);
                 getFullDefect(results.defect, function(err, arrDefect) {
-                    if(err)
+                    if (err)
                         return next(err);
                     results.defect = arrDefect;
-                    console.log(results.defect);
+                    // console.log(results.defect);
                     res.json(results);
                 });
                 // res.json(results);
@@ -472,7 +488,7 @@ module.exports = function(app) {
 
     function getFullDefect(arrDefect, callback) {
         var arrDefectResult = [];
-        if(arrDefect.length == 0)
+        if (arrDefect.length == 0)
             return callback(null, arrDefect);
         async.each(arrDefect, function(defect, cb1) {
             async.parallel({
@@ -547,7 +563,7 @@ module.exports = function(app) {
                 defectNew.SubCategoryName = results.SubCategoryName;
                 defectNew.SubDepartmentID = defect.SubDepartmentID;
                 defectNew.SubDepartmentName = results.SubDepartmentName;
-                defectNew.idDefect = defect.idDefect;
+                defectNew.id = defect.id;
                 defectNew.ZoneID = defect.ZoneID;
                 defectNew.ZoneName = results.ZoneName;
                 defectNew.SubZoneID = defect.SubZoneID;
@@ -563,9 +579,10 @@ module.exports = function(app) {
                 defectNew.ExpectedCompleteDate = defect.ExpectedCompleteDate;
                 defectNew.ResolvedPictureList = defect.ResolvedPictureList;
                 defectNew.ResolvedDescriptionList = defect.ResolvedDescriptionList;
+                defectNew.SentTechnicianList = JSON.stringify(defect.SentTechnicianList);
 
-                console.log('defect:');
-                console.log(defectNew);
+                // console.log('defect:');
+                // console.log(defectNew);
 
                 arrDefectResult.push(defectNew);
                 //call cb1 to next defect
@@ -578,6 +595,7 @@ module.exports = function(app) {
         });
     }
 
+    //define upload
 
     var storageDefectImg = multer.diskStorage({
         destination: './upload/defects/',
@@ -587,71 +605,72 @@ module.exports = function(app) {
                 UUID = req.decoded.UUID;
                 username = req.decoded.username;
             }
-            var defectID = req.body.defectID;
-            cb(null, defectID + '-' + file.originalname);
+            // var defectID = req.body.defectID;
+            DefectController.findByDefectID(id, function(err, defect) {
+                // var id = defect.id;
+                cb(null, UUID + '-' + file.originalname);
+            });
         }
     });
 
-    var upload = multer({
+    var storageResolveImg = multer.diskStorage({
+        destination: './upload/resolves/',
+        filename: function(req, file, cb) {
+            var UUID, username;
+            if (req.decoded) {
+                UUID = req.decoded.UUID;
+                username = req.decoded.username;
+            }
+            var defectID = req.body.defectID;
+
+            cDefectController.findByDefectID(id, function(err, defect) {
+                var id = defect.id;
+                cb(null, id + '-' + file.originalname);
+            });
+        }
+    });
+
+    //Upload defect image --------------------------------
+
+    var uploadDefect = multer({
         storage: storageDefectImg
     });
 
-    var type = upload.single('fileDefect');
+    var typeDefect = uploadDefect.single('fileDefect');
 
-
-    APIRouter.post('/noauthen-uploadImageDefect', type, function(req, res, next) {
-
-        /** When using the "single"
-      data come in "req.file" regardless of the attribute "name". **/
+    APIRouter.post('/noauthen-uploadImageDefect', typeDefect, function(req, res, next) {
         console.log(req.file);
-        //   var tmp_path = req.file.path;
-
-
-        //   /** The original name of the uploaded file
-        // stored in the variable "originalname". **/
-        //   var target_path = 'upload/defects' + req.file.originalname;
-
-        //   /** A better way to copy the uploaded file. **/
-        //   var src = fs.createReadStream(tmp_path);
-        //   var dest = fs.createWriteStream(target_path);
-        //   src.pipe(dest);
-        //   src.on('end', function() {
         res.json({
             'result': 'success'
         });
-        //   });
-        //   src.on('error', function(err) {
-        //       res.json(err);
-        //   });
-
     });
 
-    APIRouter.post('/uploadImageDefect', type, function(req, res, next) {
-
-        /** When using the "single"
-      data come in "req.file" regardless of the attribute "name". **/
+    APIRouter.post('/uploadImageDefect', typeDefect, function(req, res, next) {
         console.log(req.file);
-        //   var tmp_path = req.file.path;
-
-
-        //   /** The original name of the uploaded file
-        // stored in the variable "originalname". **/
-        //   var target_path = 'upload/defects' + req.file.originalname;
-
-        //   /** A better way to copy the uploaded file. **/
-        //   var src = fs.createReadStream(tmp_path);
-        //   var dest = fs.createWriteStream(target_path);
-        //   src.pipe(dest);
-        //   src.on('end', function() {
         res.json({
             'result': 'success'
         });
-        //   });
-        //   src.on('error', function(err) {
-        //       res.json(err);
-        //   });
+    });
+
+    //End Upload Defect image----------------------------
+
+    //Upload Resolve
+
+    var uploadResolve = multer({
+        storage: storageResolveImg
+    });
+
+    var typeResolve = uploadResolve.single('fileResolve');
+
+    APIRouter.post('/uploadImageResolve', typeResolve, function(req, res, next) {
+        console.log(req.file);
+        res.json({
+            'result': 'success'
+        });
 
     });
+
+    //----------------------------------------------
 
     APIRouter.post('/authenTechnicianAndUpdateInfo', function(req, res, next) {
         var bodyRequest = req.body;
@@ -727,12 +746,17 @@ module.exports = function(app) {
         console.log(file);
         res.download(file);
     });
-    //APIRouter.get('/users', UserController.findAll);
-    // APIRouter.post('/users', UserController.create);
-    // APIRouter.get('/users/:userId', UserController.find);
-    // APIRouter.put('/users/:userId', UserController.update);
-    // APIRouter.delete('/users/:userId', UserController.destroy);
-    // APIRouter.post('/users/setgroups', UserController.setGroups);
-    // APIRouter.modelMapping.users = 'User';
+
+    APIRouter.get('/downloadImageDefect/:fileName', function(req, res, next) {
+        var fileName = req.params.fileName;
+        // var idx = fileName.lastIndexOf('-');
+        // var id = fileName.substr(0, idx);
+        // fileName = fileName.substr(idx + 1);
+        // DefectController.findByID(id, function(err, defect) {
+        //     var reportedBy = defect.ReportedBy.toString();
+        var file = app.environment.root + '/upload/defects/' + fileName;
+        res.download(file);
+        // });
+    });
 
 };

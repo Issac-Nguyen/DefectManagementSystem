@@ -5,13 +5,16 @@ module.exports = function(app) {
     var DefectController = {};
     var DefectService = app.services.Defect;
 
-    DefectController.findByDefectID = function(req, res) {
-        DefectService.findByID(req.params.Id, function(err, defect) {
-            if (err) {
-                return res.json(err);
-            }
-            return res.json(defect);
-        });
+    DefectController.findByDefectID = function(id, callback) {
+        DefectService.findByDefectID(id, callback);
+    }
+
+    DefectController.findByID = function(id, callback) {
+        DefectService.findByID(id, callback);
+    }
+
+    DefectController.updateWithCallback = function(condition, objSet, callback) {
+        DefectService.updateWithCallback(condition, objSet, callback);
     }
 
 
@@ -25,7 +28,7 @@ module.exports = function(app) {
         defectObj['SubCategoryID'] = data['SubCategory_id'];
         defectObj['ZoneID'] = data['Zone_id'];
         defectObj['FloorID'] = data['Floor_id'];
-        if (!data['CreatedBy']) {
+        if (data['CreatedBy']) {
             defectObj['ReportedBy'] = defectObj['CreatedBy'] = defectObj['UpdatedBy'] = data['CreatedBy'];
         // } else if (this.isModified()) {
         //     this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);

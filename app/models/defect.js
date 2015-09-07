@@ -76,6 +76,10 @@ var DefectSchema = new Schema({
     ResolvedDescriptionList: {
         type: Array,
     },
+    SentTechnicianList:{
+        type: Array,
+        default: []
+    },
     SendStatusToUserByEmail: {
         type: Boolean,
         default: false
