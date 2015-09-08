@@ -57,7 +57,7 @@ var TopSchema = new Schema({
 	},
 }, {
 	read: 'nearest',
-	collection: 'TOP'
+	collection: 'Top'
 });
 
 // TopSchema.virtual('password').set(function(password) {
@@ -94,5 +94,5 @@ var TOP = mongoose.model('TOP', TopSchema);
 module.exports = {
 	schema: TopSchema,
 	model: TOP,
-	modelName: 'TOP'
+	modelName: 'Top'
 };

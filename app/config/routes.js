@@ -24,6 +24,8 @@ module.exports = function(app) {
         DefectController = require('../controllers/defect-controller')(app),
         TechnicianController = require('../controllers/technician-controller')(app),
         NotificationController = require('../controllers/notification-controller')(app),
+        TopController = require('../controllers/top-controller')(app),
+        CompanyController = require('../controllers/company-controller')(app),
         secretJWT = app.environment.secretJWT;
 
     var authenAPIRequest = function(req, res, next) {
@@ -144,6 +146,20 @@ module.exports = function(app) {
 
     APIRouter.get('/noauthen-getInfomationInit', function(req, res, next) {
         async.parallel({
+            top: function(callback) {
+                TopController.findAllFromDateWithCallback(dateGet, function(err, tops) {
+                    if (err)
+                        return callback(err);
+                    callback(null, tops);
+                });
+            },
+            company: function(callback) {
+                CompanyController.findAllFromDateWithCallback(dateGet, function(err, companies) {
+                    if (err)
+                        return callback(err);
+                    callback(null, companies);
+                });
+            },
             building: function(callback) {
                 BuildingController.findAllWithCallback(function(err, buildings) {
                     if (err)
@@ -306,6 +322,20 @@ module.exports = function(app) {
                 });
             var objectID = user._id;
             async.parallel({
+                top: function(callback) {
+                    TopController.findAllFromDateWithCallback(dateGet, function(err, tops) {
+                        if (err)
+                            return callback(err);
+                        callback(null, tops);
+                    });
+                },
+                company: function(callback) {
+                    CompanyController.findAllFromDateWithCallback(dateGet, function(err, companies) {
+                        if (err)
+                            return callback(err);
+                        callback(null, companies);
+                    });
+                },
                 building: function(callback) {
                     BuildingController.findAllFromDateWithCallback(dateGet, function(err, buildings) {
                         if (err)
@@ -408,6 +438,20 @@ module.exports = function(app) {
             var CategoryList = user.CategoryList;
             var objectID = user._id;
             async.parallel({
+                top: function(callback) {
+                    TopController.findAllFromDateWithCallback(dateGet, function(err, tops) {
+                        if (err)
+                            return callback(err);
+                        callback(null, tops);
+                    });
+                },
+                company: function(callback) {
+                    CompanyController.findAllFromDateWithCallback(dateGet, function(err, companies) {
+                        if (err)
+                            return callback(err);
+                        callback(null, companies);
+                    });
+                },
                 building: function(callback) {
                     BuildingController.findAllFromDateWithCallback(dateGet, function(err, buildings) {
                         if (err)

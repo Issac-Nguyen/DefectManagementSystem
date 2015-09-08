@@ -9,6 +9,15 @@ module.exports = function(app) {
 		}, callback);
 	};
 
+	CompanyService.findAll = function(callback) {
+		return app.models.Company.find({
+		}, callback);
+	};
+
+	CompanyService.findAllFromDate = function(dateFrom, cb) {
+		return app.models.Company.find({UpdatedOn: {$gte: dateFrom}}, cb);
+	}
+
 	return {
 		service: CompanyService,
 		serviceName: 'Company'
