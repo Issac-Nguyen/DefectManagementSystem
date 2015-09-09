@@ -147,14 +147,14 @@ module.exports = function(app) {
     APIRouter.get('/noauthen-getInfomationInit', function(req, res, next) {
         async.parallel({
             top: function(callback) {
-                TopController.findAllFromDateWithCallback(dateGet, function(err, tops) {
+                TopController.findAllWithCallback(function(err, tops) {
                     if (err)
                         return callback(err);
                     callback(null, tops);
                 });
             },
             company: function(callback) {
-                CompanyController.findAllFromDateWithCallback(dateGet, function(err, companies) {
+                CompanyController.findAllWithCallback(function(err, companies) {
                     if (err)
                         return callback(err);
                     callback(null, companies);

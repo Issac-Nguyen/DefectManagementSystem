@@ -39,7 +39,7 @@ var CompanySchema = new Schema({
 		type: Number,
 		default: 7
 	},
-	DefaultPictureSize: {
+	DefectPictureSize: {
 		type: String,
 		default: '100x100'
 	},
@@ -47,7 +47,7 @@ var CompanySchema = new Schema({
 		type: String,
 		default: '100x100'
 	},
-	MaxNoDefaultPicture: {
+	MaxNoDefectPicture: {
 		type: Number,
 		default: 4
 	},
@@ -61,13 +61,21 @@ var CompanySchema = new Schema({
 	},
 	RetrieveFromLibrary: {
 		type: Boolean,
-		default: true
+		default: false
 	},
 	DefectPictureIsNeeded: {
 		type: Boolean,
 		default: true
 	},
 	DefectDescIsNeeded: {
+		type: Boolean,
+		default: true
+	},
+	ResolvePictureIsNeeded: {
+		type: Boolean,
+		default: true
+	},
+	ResolveDescIsNeeded: {
 		type: Boolean,
 		default: true
 	},

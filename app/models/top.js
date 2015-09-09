@@ -31,13 +31,21 @@ var TopSchema = new Schema({
 	},
 	RetrieveFromLibrary: {
 		type: Boolean,
-		default: true
+		default: false
 	},
 	DefectPictureIsNeeded: {
 		type: Boolean,
 		default: true
 	},
 	DefectDescIsNeeded: {
+		type: Boolean,
+		default: true
+	},
+	ResolvePictureIsNeeded: {
+		type: Boolean,
+		default: true
+	},
+	ResolveDescIsNeeded: {
 		type: Boolean,
 		default: true
 	},
@@ -60,14 +68,6 @@ var TopSchema = new Schema({
 	collection: 'Top'
 });
 
-// TopSchema.virtual('password').set(function(password) {
-// 	this.salt = (Math.random() * 1e8).toString(36).slice(0, 5);
-// 	this.hashedPassword = encryptPassword(password, this.salt);
-// });
-
-// TopSchema.methods.checkPassword = function(password) {
-// 	return encryptPassword(password, this.salt) === this.hashedPassword;
-// };
 
 TopSchema.pre('save', function(next) {
 	if (!this['CreatedOn']) {
