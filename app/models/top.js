@@ -9,7 +9,7 @@ var TopSchema = new Schema({
 		index: true,
 		required: true
 	},
-	DefaultPictureSize: {
+	DefectPictureSize: {
 		type: String,
 		default: '100x100'
 	},
@@ -17,7 +17,7 @@ var TopSchema = new Schema({
 		type: String,
 		default: '100x100'
 	},
-	MaxNoDefaultPicture: {
+	MaxNoDefectPicture: {
 		type: Number,
 		default: 4
 	},

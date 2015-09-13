@@ -14,6 +14,20 @@ module.exports = function(app) {
     }
 
     DefectController.updateWithCallback = function(condition, objSet, callback) {
+        if (objSet.Arr_imageResolve) {
+            for (var i = 0; i < Arr_imageResolve.length; i++) {
+                var arrResolvePicture = JSON.parse(objSet['Arr_imageResolve']);
+                var ResolvedPictureList = [];
+                var ResolvedDescriptionList = [];
+                for (var i = 0; i < arrResolvePicture.length; i++) {
+                    var item = arrResolvePicture[i];
+                    ResolvedPictureList.push(item.dataURL);
+                    ResolvedDescriptionList.push(item.description);
+                }
+                objSet['ResolvedPictureList'] = ResolvedPictureList;
+                objSet['ResolvedDescriptionList'] = ResolvedDescriptionList;
+            }
+        }
         DefectService.updateWithCallback(condition, objSet, callback);
     }
 
@@ -30,8 +44,8 @@ module.exports = function(app) {
         defectObj['FloorID'] = data['Floor_id'];
         if (data['CreatedBy']) {
             defectObj['ReportedBy'] = defectObj['CreatedBy'] = defectObj['UpdatedBy'] = data['CreatedBy'];
-        // } else if (this.isModified()) {
-        //     this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
+            // } else if (this.isModified()) {
+            //     this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
         }
 
         defectObj['ReportedOn'] = moment(data.CreatedDate + ' ' + data.CreatedTime, 'DD/MM/YYYY HH:mm:SS').toDate();
