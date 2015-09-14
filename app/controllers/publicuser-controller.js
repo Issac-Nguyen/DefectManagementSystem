@@ -17,6 +17,10 @@ module.exports = function(app) {
 		PublicUserService.findByUUID(UUID, callback);
 	}
 
+	PublicUserController.findById = function(id, callback) {
+		PublicUserService.findById(id, callback);
+	}
+
 	PublicUserController.addNewUser = function(obj, cb) {
 		PublicUserService.insert(obj, cb);
 	}

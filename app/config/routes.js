@@ -273,12 +273,14 @@ module.exports = function(app) {
                         DefectController.updateWithCallback(condition, objSet, function() {});
                         for (var i = 0; i < technicians.length; i++) {
                             var technician = technicians[i];
-                            NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
-                                alert: "You have new Defect",
-                                // payload: {
-                                //     'messageFrom': Date.now().toString()
-                                // }
-                            });
+                            if (defect.SendStatusTouserByNotificaiton) {
+                                NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                                    alert: "You have new Defect",
+                                    // payload: {
+                                    //     'messageFrom': Date.now().toString()
+                                    // }
+                                });
+                            }
                         }
                     });
                     cb(null, defect.idDefect.toString());
@@ -305,6 +307,106 @@ module.exports = function(app) {
         //     result: 'success'
         // });
     });
+
+    APIRouter.post('/uploadDefectResolve', function(req, res, next) {
+        var username = req.decoded.username;
+        TechnicianController.findByUserName(username, function(err, user) {
+            if (err)
+                return next(err);
+            // var objectID = user._id;
+            var arrDefect = JSON.parse(req.body.data);
+            async.map(arrDefect, function(item, cb) {
+                // console.log(item);
+                // item.CreatedBy = objectID;
+                // item.idDefect = item.id;
+                var condition = {
+                    _id: item.id
+                };
+                DefectController.findByID(condition, function(errt, defectt) {
+                    if (errt)
+                        return cb(null, '');
+                    console.log(defectt);
+                    if (defectt == null)
+                        return cb(null, '');
+                    if (defectt.Status == 2) {
+                        //if defect is resolved by technican
+                        cb(null, '');
+                    } else if (defectt.Status == 1) {
+                        console.log('Status = 1');
+                        var condition = {
+                            _id: item.id
+                        };
+                        //if defect is not resolved by any technician
+                        DefectController.updateWithCallback(condition, {
+                            Arr_imageResolve: item.Arr_imageResolve,
+                            Status: item.Status
+                        }, function(err, defect) {
+                            if (err)
+                                return cb(null, '');
+                            console.log(defect);
+                            //Sent notification for other technician
+                            var SentTechnicianListWithoutCurrentUser = _.without(defect.SentTechnicianList, '/' + username + '/');
+                            console.log(SentTechnicianListWithoutCurrentUser);
+                            if (SentTechnicianListWithoutCurrentUser.length > 0) {
+                                async.each(SentTechnicianListWithoutCurrentUser, function(u, callback) {
+                                    var us = u.replace('/' / g, '');
+                                    var condition = {
+                                        username: us
+                                    };
+                                    TechnicianController.find(condition, function(err1, technician) {
+                                        if (err1)
+                                            return callback(err1);
+                                        if (technician == null)
+                                            return callback();
+                                        if (defect.SendStatusTouserByNotificaiton) {
+                                            NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                                                alert: "Defect id " + defect.id + " has been resolved by " + username
+                                                // payload: {
+                                                //     'messageFrom': Date.now().toString()
+                                                // }
+                                            });
+                                        }
+                                        callback();
+                                    });
+
+                                }, function(err) {
+                                    return cb(null, '');
+                                })
+                            }
+
+                            //Sent notification for public user
+                            PublicUserController.findById(defect.CreatedBy, function(err2, publicuser) {
+                                if (err2)
+                                    return cb(null, '');
+                                if (publicuser == null)
+                                    return cb(null, '');
+                                if (defect.SendStatusTouserByNotificaiton) {
+                                    NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                                        alert: "Defect id " + defect.idDefect + " has been resolved by " + username
+                                        // payload: {
+                                        //     'messageFrom': Date.now().toString()
+                                        // }
+                                    });
+                                }
+                            })
+
+                            cb(null, defect.idDefect.toString());
+                        });
+                    } else {
+                        return cb(null, '');
+                    }
+                });
+
+            }, function(err, results) {
+                if (err)
+                    return next(err);
+                console.log(results);
+
+                res.json(results);
+            })
+        });
+    });
+
 
     APIRouter.post('/getStatusDefectFromTimestamp', function(req, res, next) {
         var UUID = req.decoded.UUID;

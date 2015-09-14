@@ -15,6 +15,12 @@ module.exports = function(app) {
         }, callback);
     }
 
+    PublicUserService.findById = function(id, callback) {
+        app.models.PublicUser.findOne({
+            _id: id
+        }, callback);
+    }
+
     PublicUserService.insert = function(obj, callback) {
         console.log(obj);
         app.models.PublicUser.findOneAndUpdate({

@@ -14,8 +14,10 @@ module.exports = function(app) {
     }
 
     DefectController.updateWithCallback = function(condition, objSet, callback) {
+        console.log(objSet);
         if (objSet.Arr_imageResolve) {
-            for (var i = 0; i < Arr_imageResolve.length; i++) {
+            objSet.Arr_imageResolve = JSON.parse(objSet.Arr_imageResolve);
+            for (var i = 0; i < objSet.Arr_imageResolve.length; i++) {
                 var arrResolvePicture = JSON.parse(objSet['Arr_imageResolve']);
                 var ResolvedPictureList = [];
                 var ResolvedDescriptionList = [];
@@ -27,7 +29,10 @@ module.exports = function(app) {
                 objSet['ResolvedPictureList'] = ResolvedPictureList;
                 objSet['ResolvedDescriptionList'] = ResolvedDescriptionList;
             }
+            delete objSet.Arr_imageResolve;
         }
+
+
         DefectService.updateWithCallback(condition, objSet, callback);
     }
 
@@ -76,6 +81,8 @@ module.exports = function(app) {
             defectObj['ResolvedPictureList'] = ResolvedPictureList;
             defectObj['ResolvedDescriptionList'] = ResolvedDescriptionList;
         }
+
+        defectObj.Status = data.Status;
 
         console.log('defectObj:');
         console.log(defectObj);

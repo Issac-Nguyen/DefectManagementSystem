@@ -102,6 +102,10 @@ var DefectSchema = new Schema({
         type: Date,
         default: new Date
     },
+    Status: {
+        type: Number,
+        default: 0
+    }
 }, {
     read: 'nearest',
     collection: 'Defect'
