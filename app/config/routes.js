@@ -42,7 +42,8 @@ module.exports = function(app) {
                 });
             }
         } else {
-            next(new Error("Authenication"));
+            // next(new Error("Authenication"));
+            res.json({result: 'Authentication'});
         }
     }
 
@@ -330,20 +331,24 @@ module.exports = function(app) {
                         return cb(null, '');
                     if (defectt.Status == 2) {
                         //if defect is resolved by technican
-                        cb(null, '');
+                        cb(null, 'RequestRequire');
                     } else if (defectt.Status == 1) {
                         console.log('Status = 1');
-                        var condition = {
-                            _id: item.id
-                        };
+                        // var condition = {
+                        //     _id: item.id
+                        // };
                         //if defect is not resolved by any technician
-                        DefectController.updateWithCallback(condition, {
+                        DefectController.updateWithIDAndCallback(item.id, {
                             Arr_imageResolve: item.Arr_imageResolve,
-                            Status: item.Status
+                            Status: item.Status,
+                            UpdatedBy: user.id
                         }, function(err, defect) {
                             if (err)
                                 return cb(null, '');
+                            console.log('defect');
                             console.log(defect);
+                            if (defect == null)
+                                return cb(null, '');
                             //Sent notification for other technician
                             var SentTechnicianListWithoutCurrentUser = _.without(defect.SentTechnicianList, '/' + username + '/');
                             console.log(SentTechnicianListWithoutCurrentUser);
@@ -370,11 +375,13 @@ module.exports = function(app) {
                                     });
 
                                 }, function(err) {
-                                    return cb(null, '');
+                                    if (err)
+                                        return cb(null, '');
                                 })
                             }
 
                             //Sent notification for public user
+                            console.log('public user');
                             PublicUserController.findById(defect.CreatedBy, function(err2, publicuser) {
                                 if (err2)
                                     return cb(null, '');
@@ -388,9 +395,10 @@ module.exports = function(app) {
                                         // }
                                     });
                                 }
-                            })
+                                console.log('last');
+                                cb(null, defect.id.toString());
+                            });
 
-                            cb(null, defect.idDefect.toString());
                         });
                     } else {
                         return cb(null, '');
@@ -521,7 +529,6 @@ module.exports = function(app) {
         TechnicianController.findByUserName(username, function(err, user) {
             if (err)
                 return next(err);
-            // console.log(user);
             if (user == null)
                 return res.json({
                     result: 'Not Found'
@@ -611,7 +618,7 @@ module.exports = function(app) {
                     });
                 },
                 defect: function(callback) {
-                    DefectController.findAllFromDateAndRelateTechnicianWithCallback(dateGet, BuildingList, CategoryList, function(err, defects) {
+                    DefectController.findAllFromDateAndRelateTechnicianWithCallback(dateGet, user.id, BuildingList, CategoryList, function(err, defects) {
                         if (err)
                             return callback(err);
                         callback(null, defects);
@@ -624,7 +631,7 @@ module.exports = function(app) {
                     if (err)
                         return next(err);
                     results.defect = arrDefect;
-                    // console.log(results.defect);
+                    console.log(results.defect);
                     res.json(results);
                 });
                 // res.json(results);

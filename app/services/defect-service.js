@@ -15,7 +15,15 @@ module.exports = function(app) {
     }
 
     DefectService.updateWithCallback = function(condition, objSet, callback) {
-        return app.models.Defect.update(condition, { $set: objSet}, callback);
+        return app.models.Defect.update(condition, {
+            $set: objSet
+        }, callback);
+    }
+
+    DefectService.updateWithIDAndCallback = function(id, objSet, callback) {
+        return app.models.Defect.findByIdAndUpdate(id, {
+            $set: objSet
+        }, callback);
     }
 
     DefectService.upsert = function(data, cb) {
@@ -38,9 +46,7 @@ module.exports = function(app) {
         }, callback);
     }
 
-    DefectService.findAllFromDateAndRelateTechnician = function(dateFrom, BuildingList, CategoryList, callback) {
-        console.log(BuildingList);
-        console.log(CategoryList);
+    DefectService.findAllFromDateAndRelateTechnician = function(dateFrom, userID, BuildingList, CategoryList, callback) {
         return app.models.Defect.find({
             UpdatedOn: {
                 $gte: dateFrom
@@ -50,7 +56,10 @@ module.exports = function(app) {
             },
             CategoryID: {
                 "$in": CategoryList
-            }
+            },
+            UpdatedBy: {
+                $ne: userID
+            },
         }, callback);
     }
 

@@ -125,7 +125,7 @@ DefectSchema.pre('validate', function(next) {
         if (!this['CreatedBy']) {
             this['ReportedBy'] = this['CreatedBy'] = this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
         } else if (this.isModified()) {
-            this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
+            // this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
         }
     }
 

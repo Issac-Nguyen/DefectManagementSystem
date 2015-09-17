@@ -36,6 +36,29 @@ module.exports = function(app) {
         DefectService.updateWithCallback(condition, objSet, callback);
     }
 
+    DefectController.updateWithIDAndCallback = function(id, objSet, callback) {
+        console.log(objSet);
+        if (objSet.Arr_imageResolve) {
+            objSet.Arr_imageResolve = JSON.parse(objSet.Arr_imageResolve);
+            for (var i = 0; i < objSet.Arr_imageResolve.length; i++) {
+                var arrResolvePicture = JSON.parse(objSet['Arr_imageResolve']);
+                var ResolvedPictureList = [];
+                var ResolvedDescriptionList = [];
+                for (var i = 0; i < arrResolvePicture.length; i++) {
+                    var item = arrResolvePicture[i];
+                    ResolvedPictureList.push(item.dataURL);
+                    ResolvedDescriptionList.push(item.description);
+                }
+                objSet['ResolvedPictureList'] = ResolvedPictureList;
+                objSet['ResolvedDescriptionList'] = ResolvedDescriptionList;
+            }
+            delete objSet.Arr_imageResolve;
+        }
+
+
+        DefectService.updateWithIDAndCallback(id, objSet, callback);
+    }
+
 
     DefectController.add = function(data, callback) {
         var defectObj = {};
@@ -93,8 +116,8 @@ module.exports = function(app) {
         DefectService.findAllFromDate(dateFrom, callback);
     }
 
-    DefectController.findAllFromDateAndRelateTechnicianWithCallback = function(dateFrom, objBuilding, objCategory, callback) {
-        DefectService.findAllFromDateAndRelateTechnician(dateFrom, objBuilding, objCategory, callback);
+    DefectController.findAllFromDateAndRelateTechnicianWithCallback = function(dateFrom, userID, objBuilding, objCategory, callback) {
+        DefectService.findAllFromDateAndRelateTechnician(dateFrom, userID, objBuilding, objCategory, callback);
     }
 
     return DefectController;
