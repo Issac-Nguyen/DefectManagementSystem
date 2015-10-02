@@ -35,18 +35,18 @@ module.exports = function(app) {
     GenericRouter.get('/webapi/me', AuthenticationController.requiresAuth, UserController.getMe);
     // GenericRouter.get('/webapi/users', AuthenticationController.requiresAuth, UserController.list);
     GenericRouter.get('/webapi/tops', AuthenticationController.requiresAuth, TopController.findAll);
-    // GenericRouter.get('/webapi/buildings', AuthenticationController.requiresAuth, BuildingController.list);
+    GenericRouter.get('/webapi/buildings', AuthenticationController.requiresAuth, BuildingController.findAll);
     // GenericRouter.get('/webapi/categorys', AuthenticationController.requiresAuth, CategoryController.list);
     // GenericRouter.get('/webapi/subcategorys', AuthenticationController.requiresAuth, SubCategoryController.list);
 
     GenericRouter.post('/webapi/addTop', AuthenticationController.requiresAuth, TopController.add);
-    GenericRouter.post('/webapi/delTop', AuthenticationController.requiresAuth, TopController.del);
+    GenericRouter.post('/webapi/delTop', AuthenticationController.requiresAuth, TopController.delete);
     GenericRouter.post('/webapi/updateTop', AuthenticationController.requiresAuth, TopController.update);
 
-    // //Building
-    // GenericRouter.post('/webapi/addBuilding', AuthenticationController.requiresAuth, BuildingController.add);
-    // GenericRouter.post('/webapi/delBuilding', AuthenticationController.requiresAuth, BuildingController.del);
-    // GenericRouter.post('/webapi/updateBuilding', AuthenticationController.requiresAuth, BuildingController.update);
+    //Building
+    GenericRouter.post('/webapi/addBuilding', AuthenticationController.requiresAuth, BuildingController.add);
+    GenericRouter.post('/webapi/delBuilding', AuthenticationController.requiresAuth, BuildingController.delete);
+    GenericRouter.post('/webapi/updateBuilding', AuthenticationController.requiresAuth, BuildingController.update);
 
     // //Category
     // GenericRouter.post('/webapi/addCategory', AuthenticationController.requiresAuth, CategoryController.add);

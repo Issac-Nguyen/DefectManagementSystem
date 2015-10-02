@@ -4,7 +4,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
     .controller('HomeController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'tops',
         function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, topsList) {
             // $scope.topsList = topsList;
-            console.log(topsList);
+            console.log(topsList[0]);
             var modal;
             var rowEntity = {};
             var action;
@@ -33,44 +33,44 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                 useExternalPagination: true,
                 // useExternalSorting: true,
                 columnDefs: [{
-                    field: 'name',
+                    field: 'Name',
                     title: 'Name',
                     enableSorting: true
                 }, {
-                    field: 'maxNoDefectPicture',
+                    field: 'MaxNoDefectPicture',
                     title: 'Maximum Defect Picture',
                     enableSorting: false
                 }, {
-                    field: 'maxNoResolvePicture',
+                    field: 'MaxNoResolvedPicture',
                     title: 'Maximum Resolve Picture',
                     enableSorting: false
                 }, {
-                    field: 'cameraOnly',
+                    field: 'UseCameraOnly',
                     enableSorting: false,
                     title: 'Only Use Camera',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'retrieveFromLiblary',
+                    field: 'RetrieveFromLibrary',
                     enableSorting: false,
                     title: 'Only Retrieve from Liblary',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'defectPictureIsNeed',
+                    field: 'DefectPictureIsNeeded',
                     enableSorting: false,
                     title: 'Defect Picture is need',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'defectDescIsNeed',
+                    field: 'DefectDescIsNeeded',
                     enableSorting: false,
                     title: 'Defect Description is need',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'resolvePictureIsNeed',
+                    field: 'ResolvePictureIsNeeded',
                     enableSorting: false,
                     title: 'Resolve Picture is need',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'resolveDescIsNeed',
+                    field: 'ResolveDescIsNeeded',
                     enableSorting: false,
                     title: 'Resolve Description is need',
                     cellTemplate: Utils.templateTrueFalseCell()
@@ -138,7 +138,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
             $scope.schema = {
                 type: "object",
                 properties: {
-                    name: {
+                    Name: {
                         type: "string",
                         // minLength: 1,
                         title: "Name",
@@ -200,7 +200,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
             };
 
             $scope.form = [
-                "name",
+                "Name",
                 // "defectPictureSize", "resolvePictureSize",
                 "maxNoDefectPicture", "maxNoResolvePicture", {
                     key: "cameraOnly",
@@ -325,7 +325,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/api/addTop" : "/api/updateTop"
+                var url = action == "New" ? "/webapi/addTop" : "/webapi/updateTop"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -376,7 +376,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/api/delTop',
+                    url: '/webapi/delTop',
                     data: {
                         id: rowEntity.id
                     }
