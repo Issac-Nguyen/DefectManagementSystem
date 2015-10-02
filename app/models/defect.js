@@ -84,7 +84,7 @@ var DefectSchema = new Schema({
         type: Boolean,
         default: false
     },
-    SendStatusTouserByNotificaiton: {
+    SendStatusTouserByNotification: {
         type: Boolean,
         default: true
     },
@@ -111,34 +111,39 @@ var DefectSchema = new Schema({
     collection: 'Defect'
 });
 
-DefectSchema.pre('validate', function(next) {
-    if (this.isNew) {
+// DefectSchema.pre('validate', function(next) {
+//     if (this.isNew) {
         
-        this['BuildingID'] = mongoose.Types.ObjectId(this['BuildingID']);
-        this['DepartmentID'] = mongoose.Types.ObjectId(this['DepartmentID']);
-        this['SubDepartmentID'] = mongoose.Types.ObjectId(this['SubDepartmentID']);
-        this['CategoryID'] = mongoose.Types.ObjectId(this['CategoryID']);
-        this['SubCategoryID'] = mongoose.Types.ObjectId(this['SubCategoryID']);
-        this['ZoneID'] = mongoose.Types.ObjectId(this['ZoneID']);
-        this['SubZoneID'] = mongoose.Types.ObjectId(this['SubZoneID']);
-        this['FloorID'] = mongoose.Types.ObjectId(this['FloorID']);
-        if (!this['CreatedBy']) {
-            this['ReportedBy'] = this['CreatedBy'] = this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
-        } else if (this.isModified()) {
-            // this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
-        }
-    }
+//         this['BuildingID'] = mongoose.Types.ObjectId(this['BuildingID']);
+//         this['DepartmentID'] = mongoose.Types.ObjectId(this['DepartmentID']);
+//         this['SubDepartmentID'] = mongoose.Types.ObjectId(this['SubDepartmentID']);
+//         this['CategoryID'] = mongoose.Types.ObjectId(this['CategoryID']);
+//         this['SubCategoryID'] = mongoose.Types.ObjectId(this['SubCategoryID']);
+//         this['ZoneID'] = mongoose.Types.ObjectId(this['ZoneID']);
+//         this['SubZoneID'] = mongoose.Types.ObjectId(this['SubZoneID']);
+//         this['FloorID'] = mongoose.Types.ObjectId(this['FloorID']);
+//         if (!this['CreatedBy']) {
+//             this['ReportedBy'] = this['CreatedBy'] = this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
+//         } else if (this.isModified()) {
+//             // this['UpdatedBy'] = mongoose.Types.ObjectId(this['CreatedBy']);
+//         }
+//     }
 
-    next();
-});
+//     next();
+// });
 
 DefectSchema.pre('save', function(next) {
 
     if (!this['CreatedOn']) {
-        this['CreatedOn'] = this['UpdatedOn'] = new Date;
+        console.log('create');
+        this['CreatedOn'] = this['UpdatedOn'] = new Date();
     } else if (this.isModified()) {
-        this['UpdatedOn'] = new Date;
+        console.log('update');
+        this['UpdatedOn'] = new Date();
     }
+
+    console.log('this');
+    console.log(this);
 
     next();
 });

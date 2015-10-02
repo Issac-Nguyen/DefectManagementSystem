@@ -29,7 +29,7 @@ module.exports = function(app) {
         secretJWT = app.environment.secretJWT;
 
     var authenAPIRequest = function(req, res, next) {
-        console.log(req.originalUrl);
+        console.log(req.url);
         var authorization = req.headers.authorization;
         if (authorization) {
             var token = authorization.split(' ')[1];
@@ -38,12 +38,30 @@ module.exports = function(app) {
                     if (err)
                         next(err);
                     req.decoded = decoded;
-                    next();
+                    console.log(decoded);
+                    if (decoded.username) {
+                        TechnicianController.findByUserName(decoded.username, function(err, user) {
+                            if (user.UUID !== decoded.UUID) {
+                                res.json({
+                                    technician: {
+                                        logout: true
+                                    }
+                                })
+                            } else {
+                                next();
+                            }
+                        });
+                    } else {
+                        next();
+                    }
+
                 });
             }
         } else {
             // next(new Error("Authenication"));
-            res.json({result: 'Authentication'});
+            res.json({
+                result: 'Authentication Failed'
+            });
         }
     }
 
@@ -218,10 +236,10 @@ module.exports = function(app) {
                 });
             },
             defect: function(callback) {
-                SubZoneController.findAllWithCallback(function(err, subzones) {
+                SubZoneController.findAllWithCallback(function(err, defects) {
                     if (err)
                         return callback(err);
-                    callback(null, subzones);
+                    callback(null, defects);
                 });
             },
         }, function(err, results) {
@@ -239,9 +257,10 @@ module.exports = function(app) {
             var objectID = user._id;
             var arrDefect = JSON.parse(req.body.data);
             async.map(arrDefect, function(item, cb) {
-                console.log(item);
+                // console.log(item);
                 item.CreatedBy = objectID;
                 item.idDefect = item.id;
+                // console.log(item);
                 DefectController.add(item, function(err, defect) {
                     if (err)
                         return cb(null, '');
@@ -259,11 +278,11 @@ module.exports = function(app) {
                     TechnicianController.find(condition, function(err, technicians) {
                         if (err)
                             return next(err);
-                        console.log(technicians);
+                        // console.log(technicians);
                         //Update SentTechnicianList of defect
                         var arrTechnician = [];
                         for (var i = 0; i < technicians.length; i++) {
-                            arrTechnician.push('/' + technicians.Username + '/');
+                            arrTechnician.push('/' + technicians[i].Username + '/');
                         }
                         var condition = {
                             _id: defect.id
@@ -271,16 +290,23 @@ module.exports = function(app) {
                         var objSet = {
                             SentTechnicianList: arrTechnician
                         };
-                        DefectController.updateWithCallback(condition, objSet, function() {});
+                        DefectController.updateWithCallback(condition, objSet, function(err, result) {
+                            if (err)
+                                console.log(err);
+                        });
                         for (var i = 0; i < technicians.length; i++) {
                             var technician = technicians[i];
-                            if (defect.SendStatusTouserByNotificaiton) {
-                                NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
-                                    alert: "You have new Defect",
-                                    // payload: {
-                                    //     'messageFrom': Date.now().toString()
-                                    // }
-                                });
+                            if (defect.SendStatusTouserByNotification) {
+                                console.log('defect');
+                                console.log(defect);
+                                console.log('technician');
+                                console.log(technician);
+                                // NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                                //     alert: "You have new Defect",
+                                //     // payload: {
+                                //     //     'messageFrom': Date.now().toString()
+                                //     // }
+                                // });
                             }
                         }
                     });
@@ -326,12 +352,13 @@ module.exports = function(app) {
                 DefectController.findByID(condition, function(errt, defectt) {
                     if (errt)
                         return cb(null, '');
+                    console.log('defect:::');
                     console.log(defectt);
                     if (defectt == null)
                         return cb(null, '');
                     if (defectt.Status == 2) {
                         //if defect is resolved by technican
-                        cb(null, 'RequestRequire');
+                        cb(null, 'RequestRequired');
                     } else if (defectt.Status == 1) {
                         console.log('Status = 1');
                         // var condition = {
@@ -351,6 +378,7 @@ module.exports = function(app) {
                                 return cb(null, '');
                             //Sent notification for other technician
                             var SentTechnicianListWithoutCurrentUser = _.without(defect.SentTechnicianList, '/' + username + '/');
+                            console.log('SentTechnicianListWithoutCurrentUser');
                             console.log(SentTechnicianListWithoutCurrentUser);
                             if (SentTechnicianListWithoutCurrentUser.length > 0) {
                                 async.each(SentTechnicianListWithoutCurrentUser, function(u, callback) {
@@ -363,7 +391,7 @@ module.exports = function(app) {
                                             return callback(err1);
                                         if (technician == null)
                                             return callback();
-                                        if (defect.SendStatusTouserByNotificaiton) {
+                                        if (defect.SendStatusTouserByNotification) {
                                             NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
                                                 alert: "Defect id " + defect.id + " has been resolved by " + username
                                                 // payload: {
@@ -387,13 +415,13 @@ module.exports = function(app) {
                                     return cb(null, '');
                                 if (publicuser == null)
                                     return cb(null, '');
-                                if (defect.SendStatusTouserByNotificaiton) {
-                                    NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
-                                        alert: "Defect id " + defect.idDefect + " has been resolved by " + username
+                                if (defect.SendStatusTouserByNotification) {
+                                    // NotificationController.sendNotification(publicuser.Platform, "PublicUser", publicuser.TokenNotifi, {
+                                    //     alert: "Defect id " + defect.idDefect + " has been resolved by " + username
                                         // payload: {
                                         //     'messageFrom': Date.now().toString()
                                         // }
-                                    });
+                                    // });
                                 }
                                 console.log('last');
                                 cb(null, defect.id.toString());
@@ -526,6 +554,7 @@ module.exports = function(app) {
             return res.sendStatus(500);
         dateGet = new Date(Number(dateGet));
         console.log(dateGet);
+        console.log(username);
         TechnicianController.findByUserName(username, function(err, user) {
             if (err)
                 return next(err);
@@ -627,13 +656,13 @@ module.exports = function(app) {
             }, function(err, results) {
                 if (err)
                     next(err);
-                getFullDefect(results.defect, function(err, arrDefect) {
-                    if (err)
-                        return next(err);
-                    results.defect = arrDefect;
-                    console.log(results.defect);
-                    res.json(results);
-                });
+                // getFullDefect(results.defect, function(err, arrDefect) {
+                //     if (err)
+                //         return next(err);
+                //     results.defect = arrDefect;
+                console.log(results);
+                res.json(results);
+                // });
                 // res.json(results);
             });
         });
@@ -733,6 +762,7 @@ module.exports = function(app) {
                 defectNew.ResolvedPictureList = defect.ResolvedPictureList;
                 defectNew.ResolvedDescriptionList = defect.ResolvedDescriptionList;
                 defectNew.SentTechnicianList = JSON.stringify(defect.SentTechnicianList);
+                defectNew.Status = defect.Status;
 
                 // console.log('defect:');
                 // console.log(defectNew);
@@ -754,15 +784,14 @@ module.exports = function(app) {
         destination: './upload/defects/',
         filename: function(req, file, cb) {
             var UUID, username;
-            if (req.decoded) {
+            if (req.decoded)
                 UUID = req.decoded.UUID;
-                username = req.decoded.username;
-            }
+
             // var defectID = req.body.defectID;
-            DefectController.findByDefectID(id, function(err, defect) {
-                // var id = defect.id;
-                cb(null, UUID + '-' + file.originalname);
-            });
+            // DefectController.findByDefectID(UUID, function(err, defect) {
+            // var id = defect.id;
+            cb(null, file.originalname);
+            // });
         }
     });
 
@@ -770,16 +799,14 @@ module.exports = function(app) {
         destination: './upload/resolves/',
         filename: function(req, file, cb) {
             var UUID, username;
-            if (req.decoded) {
-                UUID = req.decoded.UUID;
-                username = req.decoded.username;
-            }
-            var defectID = req.body.defectID;
+            // if (req.decoded)
+            //     UUID = req.decoded.UUID;
 
-            cDefectController.findByDefectID(id, function(err, defect) {
-                var id = defect.id;
-                cb(null, id + '-' + file.originalname);
-            });
+            // var defectID = req.body.defectID;
+            // DefectController.findByDefectID(UUID, function(err, defect) {
+            // var id = defect.id;
+            cb(null, file.originalname);
+            // });
         }
     });
 
@@ -830,6 +857,7 @@ module.exports = function(app) {
         var tokenNotification = bodyRequest.tokenNotification || '';
         var decoded = req.decoded;
         var UUID = bodyRequest.UUID;
+        console.log(UUID);
         TechnicianController.findByUserName(decoded.username, function(err, technician) {
             if (err)
                 return next(err);
@@ -843,7 +871,7 @@ module.exports = function(app) {
                     TokenNotifi: tokenNotification
                 }, function(err, technician) {
                     if (err)
-                        return next(err);
+                        return console.log(err);
                     res.json({
                         result: 'success'
                     });
@@ -881,7 +909,8 @@ module.exports = function(app) {
             }
             TechnicianController.update(technician.id, objSet, function(err, t) {
                 var token = jwt.sign({
-                    username: technician.Username
+                    username: technician.Username,
+                    UUID: objSet.UUID
                 }, secretJWT);
 
                 res.json({
@@ -900,8 +929,24 @@ module.exports = function(app) {
         res.download(file);
     });
 
+    APIRouter.post('/updateInformationPublicUser', function(req, res, next) {
+        var UUID = req.decoded.UUID;
+        var body = req.body;
+        if(body) {
+            console.log(body);
+            PublicUserController.updateWithUUIDCallback(UUID, body, function(err) {
+                if(err)
+                    return res.json({result: "There's an error in update"});
+                return res.json({result: "Updated"});
+            })
+        } else {
+            res.json({result: 'No information updated'});
+        }
+    });
+
     APIRouter.get('/downloadImageDefect/:fileName', function(req, res, next) {
         var fileName = req.params.fileName;
+
         // var idx = fileName.lastIndexOf('-');
         // var id = fileName.substr(0, idx);
         // fileName = fileName.substr(idx + 1);

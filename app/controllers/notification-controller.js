@@ -3,9 +3,6 @@ var apn = require('apn'),
     apnConnectionTechnician,
     options;
 
-
-
-
 module.exports = function(app) {
     console.log(app.root);
     if (!apnConnectionPublicUser && !apnConnectionTechnician) {
@@ -33,7 +30,7 @@ module.exports = function(app) {
             var myDevice = new apn.Device(token);
             var apnConnection;
             note.alert = obj.alert;
-            note.payload = obj.payload;
+            // note.payload = obj.payload;
             if (type == 'PublicUser') {
                 apnConnection = apnConnectionPublicUser;
             } else if (type == 'Technician') {

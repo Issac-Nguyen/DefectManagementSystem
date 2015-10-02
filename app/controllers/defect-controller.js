@@ -14,21 +14,21 @@ module.exports = function(app) {
     }
 
     DefectController.updateWithCallback = function(condition, objSet, callback) {
-        console.log(objSet);
         if (objSet.Arr_imageResolve) {
             objSet.Arr_imageResolve = JSON.parse(objSet.Arr_imageResolve);
             for (var i = 0; i < objSet.Arr_imageResolve.length; i++) {
-                var arrResolvePicture = JSON.parse(objSet['Arr_imageResolve']);
+                var arrResolvePicture = JSON.parse(objSet['Arr_imageResolve'][i]);
                 var ResolvedPictureList = [];
                 var ResolvedDescriptionList = [];
-                for (var i = 0; i < arrResolvePicture.length; i++) {
-                    var item = arrResolvePicture[i];
-                    ResolvedPictureList.push(item.dataURL);
-                    ResolvedDescriptionList.push(item.description);
-                }
-                objSet['ResolvedPictureList'] = ResolvedPictureList;
-                objSet['ResolvedDescriptionList'] = ResolvedDescriptionList;
+                // for (var i = 0; i < arrResolvePicture.length; i++) {
+                // var item = arrResolvePicture[i];
+                ResolvedPictureList.push(arrResolvePicture.dataURL);
+                ResolvedDescriptionList.push(arrResolvePicture.description);
+                // }
             }
+            objSet['ResolvedPictureList'] = ResolvedPictureList;
+            objSet['ResolvedDescriptionList'] = ResolvedDescriptionList;
+            // }
             delete objSet.Arr_imageResolve;
         }
 
@@ -37,15 +37,15 @@ module.exports = function(app) {
     }
 
     DefectController.updateWithIDAndCallback = function(id, objSet, callback) {
-        console.log(objSet);
         if (objSet.Arr_imageResolve) {
             objSet.Arr_imageResolve = JSON.parse(objSet.Arr_imageResolve);
+            console.log(objSet);
             for (var i = 0; i < objSet.Arr_imageResolve.length; i++) {
-                var arrResolvePicture = JSON.parse(objSet['Arr_imageResolve']);
+                var arrResolvePicture = objSet['Arr_imageResolve'][i];
                 var ResolvedPictureList = [];
                 var ResolvedDescriptionList = [];
-                for (var i = 0; i < arrResolvePicture.length; i++) {
-                    var item = arrResolvePicture[i];
+                for (var j = 0; j < arrResolvePicture.length; j++) {
+                    var item = arrResolvePicture[j];
                     ResolvedPictureList.push(item.dataURL);
                     ResolvedDescriptionList.push(item.description);
                 }
@@ -63,13 +63,14 @@ module.exports = function(app) {
     DefectController.add = function(data, callback) {
         var defectObj = {};
         defectObj['idDefect'] = data.id;
-        defectObj['BuildingID'] = data['Building_id'];
-        defectObj['DepartmentID'] = data['Department_id'];
-        defectObj['SubDepartmentID'] = data['SubDepartment_id'];
-        defectObj['CategoryID'] = data['Category_id'];
-        defectObj['SubCategoryID'] = data['SubCategory_id'];
-        defectObj['ZoneID'] = data['Zone_id'];
-        defectObj['FloorID'] = data['Floor_id'];
+        defectObj['BuildingID'] = data['BuildingID'];
+        defectObj['DepartmentID'] = data['DepartmentID'];
+        defectObj['SubDepartmentID'] = data['SubDepartmentID'];
+        defectObj['CategoryID'] = data['CategoryID'];
+        defectObj['SubCategoryID'] = data['SubCategoryID'];
+        defectObj['ZoneID'] = data['ZoneID'];
+        defectObj['SubZoneID'] = data['SubZoneID'];
+        defectObj['FloorID'] = data['FloorID'];
         if (data['CreatedBy']) {
             defectObj['ReportedBy'] = defectObj['CreatedBy'] = defectObj['UpdatedBy'] = data['CreatedBy'];
             // } else if (this.isModified()) {
@@ -77,7 +78,7 @@ module.exports = function(app) {
         }
 
         defectObj['ReportedOn'] = moment(data.CreatedDate + ' ' + data.CreatedTime, 'DD/MM/YYYY HH:mm:SS').toDate();
-        defectObj['ExpectedCompleteDate'] = moment(data.ExpectedDate, 'DD/MM/YYYY').toDate();
+        defectObj['ExpectedCompleteDate'] = moment(data.ExpectedCompleteDate, 'DD/MM/YYYY').toDate();
         if (data['Arr_imageDefect']) {
             var arrDefectPicture = JSON.parse(data['Arr_imageDefect']);
             var DefectPictureList = [];
@@ -107,8 +108,6 @@ module.exports = function(app) {
 
         defectObj.Status = data.Status;
 
-        console.log('defectObj:');
-        console.log(defectObj);
         DefectService.add(defectObj, callback);
     }
 

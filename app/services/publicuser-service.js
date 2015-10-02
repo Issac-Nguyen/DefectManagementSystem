@@ -9,6 +9,10 @@ module.exports = function(app) {
         }, callback);
     };
 
+    PublicUserService.updateWithUUIDCallback = function(UUID, objset, callback) {
+        return app.models.PublicUser.update({UUID: UUID}, {$set: objset}, callback);
+    }
+
     PublicUserService.findByUUID = function(UUID, callback) {
         app.models.PublicUser.findOne({
             UUID: UUID

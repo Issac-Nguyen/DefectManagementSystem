@@ -14,8 +14,6 @@ module.exports = function(app) {
     };
 
     TechnicianService.login = function(username, password, callback) {
-        console.log(username);
-        console.log(password);
         app.models.Technician.findOne({
             Username: username
         }, function(err, technician) {

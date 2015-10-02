@@ -13,6 +13,10 @@ module.exports = function(app) {
 		});
 	};
 
+	PublicUserController.updateWithUUIDCallback = function(UUID, objset, callback) {
+		PublicUserService.updateWithUUIDCallback(UUID, objset, callback);
+	};
+
 	PublicUserController.findByUUID = function(UUID, callback) {
 		PublicUserService.findByUUID(UUID, callback);
 	}
