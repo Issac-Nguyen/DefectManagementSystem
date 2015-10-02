@@ -1,0 +1,144 @@
+<!-- <h1>User Home Page</h1>
+<h4>Logged in user</h4>
+<p> <strong>Email: </strong> {{ user.local.email }}</p>
+<p> <strong>Facebook Id: </strong> {{ user.facebook.id }}</p>
+<p> <strong>Access Token: </strong> {{ user.access_token }} </p>
+<button class="btn btn-md btn-primary"
+ng-click="logout()">Log out</button> -->
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12 navbar-inverse">
+			<!-- <img alt="Bootstrap Image Preview" src="http://lorempixel.com/140/140/" /> -->
+			<h2 style="display: inline-block; color: white">
+			Defect Management System
+			</h2>
+		</div>
+	</div>
+	<div class="row">
+		<!-- <div class="col-md-12"> -->
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="navbar-header">
+				
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+				</button> <a class="navbar-brand" href="#"></a>
+			</div>
+			
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="#" ui-sref="user.top">Top</a>
+					</li>
+					<li>
+						<a href="#" ui-sref="user.company">Company</a>
+					</li>
+					<li>
+						<a href="#" ui-sref="user.building">Building</a>
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage Category<strong class="caret"></strong></a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="#" ui-sref="user.category">Category</a>
+							</li>
+							<li>
+								<a href="#" ui-sref="user.subCategory">Sub-Category</a>
+							</li>
+						</ul>
+					</li>
+					<li class="dropdown active">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage Department<strong class="caret"></strong></a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="#" ui-sref="user.department">Department</a>
+							</li>
+							<li class="active">
+								<a href="#" ui-sref="user.subDepartment">Sub-Department</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#"  ui-sref="user.floor">Floor</a>
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage Zone<strong class="caret"></strong></a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="#"  ui-sref="user.zone">Zone</a>
+							</li>
+							<li>
+								<a href="#"  ui-sref="user.subZone">Sub-Zone</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<p>Signed in as <a href="#"><strong>{{ user.local.email }}</strong></a></p>
+				</ul>
+				<button class="btn btn-md btn-primary"
+				ng-click="logout()">Log out</button>
+			</div>
+			
+		</nav>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="btn-group">
+				
+				<button type="button" class="btn btn-default btn-primary" id="newBtn" ng-click="onBtnAddNew()">
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="row" style="margin-top: 10px">
+		<div class="col-md-12" id="table">
+			<div ui-grid="gridOptions" ui-grid-pagination class="table"></div>
+		</div>
+	</div>
+</div>
+<!-- modal for create/edit -->
+<script type="text/ng-template" id="ModalCreateEdit.html">
+<div class="modal-header">
+				<h3 class="modal-title">{{HeaderModal}}</h3>
+</div>
+<div class="modal-body">
+				<form name="formTop" sf-schema="schema" sf-form="form" sf-model="model" ng-submit="onSubmit(formTop)"></form>
+</div>
+</script>
+<!-- Cell Template -->
+<script type="text/ng-template" id="edit-button-cell.html">
+<div class="ui-grid-cell-contents">
+<button type="button" class="btn btn-primary btn-xs" ng-click="grid.appScope.editRow(grid, row)">
+Edit
+</button>
+</div>
+</script>
+<!-- Cell Template -->
+<script type="text/ng-template" id="edit-button-cell.html">
+<div class="ui-grid-cell-contents">
+<button type="button" class="btn btn-primary btn-xs" ng-click="grid.appScope.editRow(grid, row)">
+Edit
+</button>
+</div>
+</script>
+<script type="text/ng-template" id="delete-button-cell.html">
+<div class="ui-grid-cell-contents">
+<button type="button" class="btn btn-danger btn-xs" ng-click="grid.appScope.deleteRow(grid, row)">
+Delete
+</button>
+</div>
+</script>
+<!-- modal for delete -->
+<script type="text/ng-template" id="ModalDel.html">
+<div class="modal-header">
+			<h3 class="modal-title">{{HeaderModal}}</h3>
+</div>
+<div class="modal-body">
+				<h3>Do you want to delete? </h3>
+</div>
+<div class="modal-footer">
+<button class="btn btn-danger" type="button" ng-click="btnDeleteClick()">Delete</button>
+<button class="btn btn-default" type="button" ng-click="closeModal()">Cancel</button>
+</div>
+</script>

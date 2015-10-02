@@ -49,7 +49,7 @@ app.disable('x-powered-by');
 
 app.use(express.static(environment.root + '/public'));
 
-// app.use(passport.initialize());
+
 // app.use(passport.session());
 
 app.use(methodOverride());
@@ -57,7 +57,8 @@ app.use(methodOverride());
 require('./models')(app);
 require('./services')(app);
 
-//require('./config/passport')(app);
+require('./config/passport')(app, passport, environment);
+app.use(passport.initialize());
 
 //require('./middlewares/request-logger')(app);
 

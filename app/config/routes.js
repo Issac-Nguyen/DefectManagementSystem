@@ -2,7 +2,7 @@
 var express = require('express'),
     APIRouter = express.Router(),
     _ = require('lodash'),
-    GenericRouter = express.Router(),
+    // GenericRouter = express.Router(),
     unless = require('express-unless'),
     jwt = require('jsonwebtoken'),
     multer = require('multer'),
@@ -10,6 +10,7 @@ var express = require('express'),
     fs = require('fs'),
     mime = require('mime'),
     async = require('async');
+    var GenericRouter;
 module.exports = function(app) {
     var BuildingController = require('../controllers/building-controller')(app),
         CategoryController = require('../controllers/category-controller')(app),
@@ -80,14 +81,9 @@ module.exports = function(app) {
         }
     });
 
+    GenericRouter = require('./routesWeb')(app);
+
     app.use('/', GenericRouter);
-
-    GenericRouter.get('/', function(req, res, next) {
-        res.sendStatus(200);
-    });
-
-    GenericRouter.post('/login', AuthenticationController.login);
-    // GenericRouter.get('/logout', AuthenticationController.logout);
 
     app.use('/api', APIRouter);
 

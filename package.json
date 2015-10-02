@@ -60,6 +60,9 @@
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.2.0",
-    "stack-trace": "0.0.9"
+    "stack-trace": "0.0.9",
+    "bcrypt": "^0.8.5",
+    "passport-http-bearer": "^1.0.1",
+    "jwt-simple": "^0.3.1"
   }
 }

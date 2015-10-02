@@ -1,0 +1,25 @@
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+@font-face{ 
+	font-family: 'Fanwood';
+	src: url('fonts/webfonts/fanwood-webfont.eot');
+	src: url('fonts/webfonts/fanwood-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('fonts/webfonts/fanwood-webfont.woff') format('woff'),
+	     url('fonts/webfonts/fanwood-webfont.ttf') format('truetype'),
+	     url('fonts/webfonts/fanwood-webfont.svg#webfont') format('svg');
+}
+
+h1, h2, h3 {
+ font-family: 'Fanwood', Arial, sans-serif !important; 
+}
+
+/* The starting CSS styles for the enter animation */
+.fade.ng-enter {
+  transition:0.5s linear all;
+  opacity:0;
+}
+
+/* The finishing CSS styles for the enter animation */
+.fade.ng-enter.ng-enter-active {
+  opacity:1;
+}

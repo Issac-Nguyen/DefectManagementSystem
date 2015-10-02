@@ -9,37 +9,28 @@ var User = require('../app/models/user'),
 	mongoUri = settings.db.url,
 	mongoose = require('mongoose').connect(mongoUri);
 
-var defaultPass = '1234';
-var defaultSalt = '';
-var md5 = function(value) {
-	return crypto.createHash('md5').update(value).digest('hex');
-};
-
-var encryptPassword = function(password, salt) {
-	salt = salt || '';
-	return md5(md5(password) + salt);
-};
 
 var users = [{
-	username: 'admin',
-	password: encryptPassword(defaultPass, defaultSalt),
-	role: 'ADMIN',
-	email: 'linhquang1986@gmail.com'
+	local:{
+		email: '123@abc.com',
+		password: '123'
+	}
 }];
 
 
 async.each(users, function(user, callback) {
 	User.model.remove({
-		username: user.username
+		'local.email': user.local.email
 	}, function(err) {
 		if (err) console.log(err);
-		var u = new User.model();
-		u.username = user.username;
-		u.email = user.email;
-		u.password = '1234';
-		u.save(function(err) {
+		var c = new User.model();
+		if(user._id)
+			c._id = user._id;
+		c.local.email = user.local.email;
+		c.local.password = user.local.password;
+		c.save(function(err) {
 			if (err) console.log(err);
-			console.log('Created user:' + u.username);
+			console.log('Created user:' + c.id);
 			callback();
 		});
 	});

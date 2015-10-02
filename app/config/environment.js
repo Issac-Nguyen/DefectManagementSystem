@@ -26,8 +26,8 @@ var config = {
       'url': 'mongodb://localhost:27017/DefectSystem',
       'username': '',
       'password': '',
-      'db': 'skeleton_dev',
-      'newdb': 'skeleton_dev',
+      'db': 'token-auth',
+      'newdb': 'token-auth',
       'host': '127.0.0.1'
     }
   },

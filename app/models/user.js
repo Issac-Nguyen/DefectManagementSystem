@@ -1,70 +1,100 @@
 'use strict';
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId,
-	crypto = require('crypto');
 
-var encryptPassword = function(password, salt) {
-	return crypto.createHash('md5').update(password + salt).digest('hex');
-};
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var bcrypt = require('bcrypt');
+var SALT_WORK_FACTOR = 10;
 
+/**
+ * User Schema
+ *
+ */
 var UserSchema = new Schema({
-	username: {
-		type: String,
-		required: true,
-		index: {
-			unique: true
-		}
-	},
-	salt: String,
-	hashedPassword: String,
-	createdDate: {
-		type: Date,
-		default: Date.now
-	},
-	updatedDate: {
-		type: Date,
-		default: Date.now
-	},
-	accessToken: String,
-	active:{
-		type: Boolean,
-		default: true
-	},
-	email: String,
+
+    local: {
+        email: String,
+        password: String,
+    },
+
+    facebook: {
+        id: String,
+        name: String,
+        email: String,
+        acessToken: String,
+        profilePic: String,
+    }
 }, {
-	read: 'nearest'
+    read: 'nearest',
+    collection: 'User'
 });
+/**
+ * Add toJSON option to transform document before returnig the result
+ */
+UserSchema.options.toJSON = {
+    transform: function(doc, ret, options) {
 
-UserSchema.virtual('password').set(function(password) {
-	this.salt = (Math.random() * 1e8).toString(36).slice(0, 5);
-	this.hashedPassword = encryptPassword(password, this.salt);
-});
+        // rewmove sensitive data
+        if (ret.local && ret.local.password) {
+            delete ret.local.password;
+        }
+        if (ret.facebook && ret.facebook.accessToken) {
+            delete ret.facebook.accessToken;
+        }
 
-UserSchema.methods.checkPassword = function(password) {
-	return encryptPassword(password, this.salt) === this.hashedPassword;
+        // add id feild and remove _id and __v
+        ret.id = ret._id;
+
+        delete ret._id;
+        delete ret.__v;
+    }
 };
 
+/**
+ * Pre-save hook for password validation and hashing
+ */
 UserSchema.pre('save', function(next) {
-	this.updatedDate = Date.now;
-	next();
+    var user = this;
+
+    // only hash the password if it has been modified (or is new)
+    if (!user.isModified('local.password')) return next();
+
+    // generate a salt
+    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if (err) return next(err);
+
+        // hash the password along with our new salt
+        bcrypt.hash(user.local.password, salt, function(err, hash) {
+            if (err) return next(err);
+
+            // override the cleartext password with the hashed one
+            user.local.password = hash;
+            next();
+        });
+    });
 });
+
+UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+    bcrypt
+        .compare(candidatePassword, this.local.password, function(err, isMatch) {
+            if (err) return cb(err);
+            cb(null, isMatch);
+        });
+};
 
 UserSchema.set('toJSON', {
-	getters: true,
-	virtuals: true
+    getters: true,
+    virtuals: true
 });
 
 UserSchema.set('toObject', {
-	getters: true,
-	virtuals: true
+    getters: true,
+    virtuals: true
 });
 
-var User = mongoose.model('user', UserSchema);
-
+var User = mongoose.model('User', UserSchema);
 
 module.exports = {
-	schema: UserSchema,
-	model: User,
-	modelName: 'User'
+    schema: UserSchema,
+    model: User,
+    modelName: 'User'
 };
