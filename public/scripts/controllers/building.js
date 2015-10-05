@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('angularTokenAuthApp.controllers')
-    .controller('BuildingController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'tops',
-        function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, topsList) {
-            // $scope.topsList = topsList;
-            console.log(topsList);
+    .controller('BuildingController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'companys', 'buildings',
+        function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, companysList, buildingsList) {
+            // $scope.buildingsList = buildingsList;
+            console.log(buildingsList);
             var modal;
             var rowEntity = {};
             var action;
@@ -54,7 +54,7 @@ angular.module('angularTokenAuthApp.controllers')
             //   onRegisterApi: function(gridApi){
             //     $scope.gridApi = gridApi;
             //   },
-            //   data: topsList
+            //   data: buildingsList
             // }
 
             $scope.gridOptions = {
@@ -123,8 +123,8 @@ angular.module('angularTokenAuthApp.controllers')
 
                 // $http.get(url)
                 // .success(function (data) {
-                var data = topsList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
-                $scope.gridOptions.totalItems = topsList.length;
+                var data = buildingsList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
+                $scope.gridOptions.totalItems = buildingsList.length;
                 // var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
                 var firstRow = 0;
                 $scope.gridOptions.data = data;
@@ -242,7 +242,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/api/addBuilding" : "/api/updateBuilding"
+                var url = action == "New" ? "/webapi/addBuilding" : "/webapi/updateBuilding"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -293,7 +293,7 @@ angular.module('angularTokenAuthApp.controllers')
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/api/delTop',
+                    url: '/webapi/delBuilding',
                     data: {
                         id: rowEntity.id
                     }

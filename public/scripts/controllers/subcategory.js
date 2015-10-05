@@ -231,7 +231,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/api/addSubCategory" : "/api/updateSubCategory"
+                var url = action == "New" ? "/webapi/addSubCategory" : "/webapi/updateSubCategory"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -270,7 +270,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.deleteRow = function(grid, row) {
                 rowEntity = row.entity;
-                $scope.HeaderModal = 'Delete Category';
+                $scope.HeaderModal = 'Delete Sub-Category';
                 modal = $modal.open({
                     animation: true,
                     templateUrl: "ModalDel.html",
@@ -284,7 +284,7 @@ angular.module('angularTokenAuthApp.controllers')
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/api/delTop',
+                    url: '/webapi/delSubCategory',
                     data: {
                         id: rowEntity.id
                     }

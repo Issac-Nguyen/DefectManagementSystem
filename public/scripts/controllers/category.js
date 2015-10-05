@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('angularTokenAuthApp.controllers')
-    .controller('CategoryController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'categorys',
-        function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, categorysList) {
+    .controller('CategoryController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'buildings', 'categorys',
+        function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, buildingsList, categorysList) {
             // $scope.categorysList = categorysList;
             console.log(categorysList);
             var modal;
@@ -242,7 +242,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/api/addCategory" : "/api/updateCategory"
+                var url = action == "New" ? "/webapi/addCategory" : "/webapi/updateCategory"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -293,7 +293,7 @@ angular.module('angularTokenAuthApp.controllers')
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/api/delTop',
+                    url: '/webapi/delCategory',
                     data: {
                         id: rowEntity.id
                     }

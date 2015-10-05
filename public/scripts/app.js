@@ -66,12 +66,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.company', {
                     url: '/companys',
                     templateUrl: '/views/company.html',
-                    controller: 'HomeController',
+                    controller: 'CompanyController',
                     resolve: {
-                        tops: function($http) {
+                        companys: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/companys'
                                 })
                                 .then(function(data) {
                                     return data.data;
@@ -84,7 +84,16 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                     templateUrl: '/views/building.html',
                     controller: 'BuildingController',
                     resolve: {
-                        tops: function($http) {
+                        companys: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/companys'
+                                })
+                                .then(function(data) {
+                                    return data.data;
+                                });
+                        },
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
                                     url: '/webapi/buildings'
@@ -98,12 +107,21 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.department', {
                     url: '/department',
                     templateUrl: '/views/department.html',
-                    controller: 'HomeController',
+                    controller: 'DepartmentController',
                     resolve: {
-                        tops: function($http) {
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/buildings'
+                                })
+                                .then(function(data) {
+                                    return data.data;
+                                });
+                        },
+                        departments: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/departments'
                                 })
                                 .then(function(data) {
                                     return data.data;
@@ -114,23 +132,36 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.subDepartment', {
                     url: '/sub-department',
                     templateUrl: '/views/subdepartment.html',
-                    controller: 'HomeController',
+                    controller: 'SubDepartmentController',
                     resolve: {
-                        tops: function($http) {
+                        subdepartments: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/subdepartments'
                                 })
                                 .then(function(data) {
-                                    var returnArr = [];
-                                    for (var i = 0; i < data.data.length; i++) {
-                                        var obj = {};
-                                        var item = data.data[i];
-                                        obj.name = item.Name;
-                                        obj.value = item.id;
-                                        returnArr.push(obj);
-                                    }
-                                    return returnArr;
+                                    return data.data;
+                                });
+                        },
+                        departments: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/departments'
+                                })
+                                .then(function(data) {
+                                    // var returnArr = [];
+                                    // for (var i = 0; i < data.data.length; i++) {
+                                    //     var obj = {};
+                                    //     var item = data.data[i];
+                                    //     obj.name = item.Name;
+                                    //     obj.value = item.id;
+                                    //     returnArr.push(obj);
+                                    // }
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    })
+                                    return data.data;
                                 });
                         },
                     }
@@ -140,6 +171,15 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                     templateUrl: '/views/category.html',
                     controller: 'CategoryController',
                     resolve: {
+                        buildings: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/buildings'
+                                })
+                                .then(function(data) {
+                                    return data.data;
+                                });
+                        },
                         categorys: function($http) {
                             return $http({
                                     method: 'GET',
@@ -191,12 +231,21 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.floor', {
                     url: '/floor',
                     templateUrl: '/views/floor.html',
-                    controller: 'HomeController',
+                    controller: 'FloorController',
                     resolve: {
-                        tops: function($http) {
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/buildings'
+                                })
+                                .then(function(data) {
+                                    return data.data;
+                                });
+                        },
+                        floors: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/floors'
                                 })
                                 .then(function(data) {
                                     return data.data;
@@ -207,12 +256,21 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.zone', {
                     url: '/zone',
                     templateUrl: '/views/zone.html',
-                    controller: 'HomeController',
+                    controller: 'ZoneController',
                     resolve: {
-                        tops: function($http) {
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/buildings'
+                                })
+                                .then(function(data) {
+                                    return data.data;
+                                });
+                        },
+                        zones: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/zones'
                                 })
                                 .then(function(data) {
                                     return data.data;
@@ -223,14 +281,35 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.subZone', {
                     url: '/sub-zone',
                     templateUrl: '/views/subzone.html',
-                    controller: 'HomeController',
+                    controller: 'SubZoneController',
                     resolve: {
-                        tops: function($http) {
+                        subzones: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/subzones'
                                 })
                                 .then(function(data) {
+                                    return data.data;
+                                });
+                        },
+                        zones: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/zones'
+                                })
+                                .then(function(data) {
+                                    // var returnArr = [];
+                                    // for (var i = 0; i < data.data.length; i++) {
+                                    //     var obj = {};
+                                    //     var item = data.data[i];
+                                    //     obj.name = item.Name;
+                                    //     obj.value = item.id;
+                                    //     returnArr.push(obj);
+                                    // }
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    })
                                     return data.data;
                                 });
                         },

@@ -17,6 +17,32 @@ module.exports = function(app) {
 		return app.models.SubCategory.find({UpdatedOn: {$gte: dateFrom}}, callback);
 	};
 
+	SubCategoryService.checkExist = function(name, id, cb) {
+        return app.models.SubCategory.findOne({
+            name: name,
+            _id: {
+                $ne: id
+            }
+        }, cb);
+    }
+
+    SubCategoryService.add = function(obj, cb) {
+        var SubCategory = new app.models.SubCategory(obj);
+        SubCategory.save(cb);
+    }
+
+    SubCategoryService.update = function(id, obj, cb) {
+        return app.models.SubCategory.findOneAndUpdate({
+            _id: id
+        }, obj, cb);
+    }
+
+    SubCategoryService.delete = function(id, cb) {
+        return app.models.SubCategory.remove({
+            _id: id
+        }, cb);
+    }
+
 	return {
 		service: SubCategoryService,
 		serviceName: 'SubCategory'
