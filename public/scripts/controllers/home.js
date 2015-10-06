@@ -4,7 +4,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
     .controller('HomeController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'tops',
         function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, topsList) {
             // $scope.topsList = topsList;
-            console.log(topsList[0]);
+            console.log(topsList);
             var modal;
             var rowEntity = {};
             var action;
@@ -16,6 +16,15 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                 sort: null
             };
 
+            //grid options
+            // $scope.gridOptions = {
+            // 	    enableFiltering: true,
+            //   onRegisterApi: function(gridApi){
+            //     $scope.gridApi = gridApi;
+            //   },
+            //   data: topsList
+            // }
+
 
             $scope.gridOptions = {
                 // paginationPageSizes: [25, 50, 75],
@@ -24,44 +33,44 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                 useExternalPagination: true,
                 // useExternalSorting: true,
                 columnDefs: [{
-                    field: 'Name',
+                    field: 'name',
                     title: 'Name',
                     enableSorting: true
                 }, {
-                    field: 'MaxNoDefectPicture',
+                    field: 'maxNoDefectPicture',
                     title: 'Maximum Defect Picture',
                     enableSorting: false
                 }, {
-                    field: 'MaxNoResolvedPicture',
+                    field: 'maxNoResolvePicture',
                     title: 'Maximum Resolve Picture',
                     enableSorting: false
                 }, {
-                    field: 'UseCameraOnly',
+                    field: 'cameraOnly',
                     enableSorting: false,
                     title: 'Only Use Camera',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'RetrieveFromLibrary',
+                    field: 'retrieveFromLiblary',
                     enableSorting: false,
                     title: 'Only Retrieve from Liblary',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'DefectPictureIsNeeded',
+                    field: 'defectPictureIsNeed',
                     enableSorting: false,
                     title: 'Defect Picture is need',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'DefectDescIsNeeded',
+                    field: 'defectDescIsNeed',
                     enableSorting: false,
                     title: 'Defect Description is need',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'ResolvePictureIsNeeded',
+                    field: 'resolvePictureIsNeed',
                     enableSorting: false,
                     title: 'Resolve Picture is need',
                     cellTemplate: Utils.templateTrueFalseCell()
                 }, {
-                    field: 'ResolveDescIsNeeded',
+                    field: 'resolveDescIsNeed',
                     enableSorting: false,
                     title: 'Resolve Description is need',
                     cellTemplate: Utils.templateTrueFalseCell()
@@ -129,7 +138,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
             $scope.schema = {
                 type: "object",
                 properties: {
-                    Name: {
+                    name: {
                         type: "string",
                         // minLength: 1,
                         title: "Name",
@@ -145,44 +154,44 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                     //     minLength: 2,
                     //     title: "Resolve Picture Size",
                     // },
-                    MaxNoDefectPicture: {
+                    maxNoDefectPicture: {
                         type: "integer",
                         minimum: 0,
                         default: 4,
                         title: "Maximum Defect Picture",
                     },
-                    MaxNoResolvedPicture: {
+                    maxNoResolvePicture: {
                         type: "integer",
                         minimum: 0,
                         default: 4,
                         title: "Maximum Resolve Picture",
                     },
-                    CameraOnly: {
+                    cameraOnly: {
                         type: "boolean",
                         default: true,
                         title: 'Only Use Camera'
                     },
-                    RetrieveFromLiblary: {
+                    retrieveFromLiblary: {
                         type: "boolean",
                         default: false,
                         title: 'Only Retrieve from Liblary'
                     },
-                    DefectPictureIsNeed: {
+                    defectPictureIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Defect Picture is need'
                     },
-                    DefectDescIsNeed: {
+                    defectDescIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Defect Description is need'
                     },
-                    ResolvePictureIsNeed: {
+                    resolvePictureIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Resolve Picture is need'
                     },
-                    ResolveDescIsNeed: {
+                    resolveDescIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Resolve Description is need'
@@ -191,10 +200,10 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
             };
 
             $scope.form = [
-                "Name",
+                "name",
                 // "defectPictureSize", "resolvePictureSize",
-                "MaxNoDefectPicture", "MaxNoResolvedPicture", {
-                    key: "CameraOnly",
+                "maxNoDefectPicture", "maxNoResolvePicture", {
+                    key: "cameraOnly",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -204,7 +213,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "RetrieveFromLiblary",
+                    key: "retrieveFromLiblary",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -214,7 +223,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "DefectPictureIsNeed",
+                    key: "defectPictureIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -224,7 +233,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "DefectDescIsNeed",
+                    key: "defectDescIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -234,7 +243,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "ResolvePictureIsNeed",
+                    key: "resolvePictureIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -244,7 +253,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "ResolveDescIsNeed",
+                    key: "resolveDescIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -316,7 +325,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/webapi/addTop" : "/webapi/updateTop"
+                var url = action == "New" ? "/api/addTop" : "/api/updateTop"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -367,7 +376,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/webapi/delTop',
+                    url: '/api/delTop',
                     data: {
                         id: rowEntity.id
                     }

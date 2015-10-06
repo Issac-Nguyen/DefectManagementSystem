@@ -81,13 +81,11 @@ module.exports = function(app) {
         }
     });
 
-    app.use('/api', APIRouter);
-
     GenericRouter = require('./routesWeb')(app);
 
     app.use('/', GenericRouter);
 
-    
+    app.use('/api', APIRouter);
 
     // APIRouter.use(AuthenticationController.hasPermission);
 
@@ -299,12 +297,12 @@ module.exports = function(app) {
                                 console.log(defect);
                                 console.log('technician');
                                 console.log(technician);
-                                NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
-                                    alert: "You have new Defect",
-                                    // payload: {
-                                    //     'messageFrom': Date.now().toString()
-                                    // }
-                                });
+                                // NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                                //     alert: "You have new Defect",
+                                //     // payload: {
+                                //     //     'messageFrom': Date.now().toString()
+                                //     // }
+                                // });
                             }
                         }
                     });
@@ -414,12 +412,12 @@ module.exports = function(app) {
                                 if (publicuser == null)
                                     return cb(null, '');
                                 if (defect.SendStatusTouserByNotification) {
-                                    NotificationController.sendNotification(publicuser.Platform, "PublicUser", publicuser.TokenNotifi, {
-                                        alert: "Defect id " + defect.idDefect + " has been resolved by " + username
+                                    // NotificationController.sendNotification(publicuser.Platform, "PublicUser", publicuser.TokenNotifi, {
+                                    //     alert: "Defect id " + defect.idDefect + " has been resolved by " + username
                                         // payload: {
                                         //     'messageFrom': Date.now().toString()
                                         // }
-                                    });
+                                    // });
                                 }
                                 console.log('last');
                                 cb(null, defect.id.toString());
@@ -538,7 +536,6 @@ module.exports = function(app) {
             }, function(err, results) {
                 if (err)
                     next(err);
-                console.log(results);
                 res.json(results);
             });
         });
@@ -896,9 +893,9 @@ module.exports = function(app) {
             if (technician.UUID != UUID) {
                 console.log('UUID: ' + UUID)
                 //send Notification for previous technician
-                NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
-                    alert: "You logged in a new device.",
-                });
+                // NotificationController.sendNotification(technician.Platform, "Technician", technician.TokenNotifi, {
+                //     alert: "You logged in a new device.",
+                // });
             }
 
             var objSet = {

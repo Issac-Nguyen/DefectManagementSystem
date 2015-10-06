@@ -22,32 +22,6 @@ module.exports = function(app) {
         }, callback);
 	};
 
-	SubDepartmentService.checkExist = function(name, id, cb) {
-        return app.models.SubDepartment.findOne({
-            name: name,
-            _id: {
-                $ne: id
-            }
-        }, cb);
-    }
-
-    SubDepartmentService.add = function(obj, cb) {
-        var SubDepartment = new app.models.SubDepartment(obj);
-        SubDepartment.save(cb);
-    }
-
-    SubDepartmentService.update = function(id, obj, cb) {
-        return app.models.SubDepartment.findOneAndUpdate({
-            _id: id
-        }, obj, cb);
-    }
-
-    SubDepartmentService.delete = function(id, cb) {
-        return app.models.SubDepartment.remove({
-            _id: id
-        }, cb);
-    }
-
 	return {
 		service: SubDepartmentService,
 		serviceName: 'SubDepartment'

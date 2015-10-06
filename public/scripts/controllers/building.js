@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('angularTokenAuthApp.controllers')
-    .controller('BuildingController', ['$scope', '$state', '$http', '$q', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'companys', 'buildings',
-        function($scope, $state, $http, $q, Utils, Auth, $modal, uiGridConstants, companysList, buildingsList) {
-            // $scope.buildingsList = buildingsList;
-            console.log(buildingsList);
+    .controller('BuildingController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'tops',
+        function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, topsList) {
+            // $scope.topsList = topsList;
+            console.log(topsList);
             var modal;
             var rowEntity = {};
             var action;
@@ -19,11 +19,29 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.callBackSD = function(options, search) {
                 if (search) {
                     console.log("Here the select lis could be narrowed using the search value: " + search.toString());
-                    return companysList.filter(function(item) {
+                    return [{
+                        value: "value1",
+                        name: "text1"
+                    }, {
+                        value: "value2",
+                        name: "text2"
+                    }, {
+                        value: "value3",
+                        name: "Select dynamic!"
+                    }].filter(function(item) {
                         return (item.name.search(search) > -1)
                     });
                 } else {
-                    return companysList;
+                    return [{
+                        value: "value1",
+                        name: "text1"
+                    }, {
+                        value: "value2",
+                        name: "text2"
+                    }, {
+                        value: "value3",
+                        name: "Select dynamic!"
+                    }];
 
                 }
                 // Note: Options is a reference to the original instance, if you change a value,
@@ -36,11 +54,8 @@ angular.module('angularTokenAuthApp.controllers')
             //   onRegisterApi: function(gridApi){
             //     $scope.gridApi = gridApi;
             //   },
-            //   data: buildingsList
+            //   data: topsList
             // }
-
-            var promise = join();
-            promise.then(getPage);
 
             $scope.gridOptions = {
                 // paginationPageSizes: [25, 50, 75],
@@ -56,10 +71,6 @@ angular.module('angularTokenAuthApp.controllers')
                 }, {
                     field: 'Description',
                     title: 'Description',
-                    enableSorting: true
-                }, {
-                    field: 'Company_Name',
-                    title: 'Company',
                     enableSorting: true
                 }, {
                     field: 'id',
@@ -112,14 +123,16 @@ angular.module('angularTokenAuthApp.controllers')
 
                 // $http.get(url)
                 // .success(function (data) {
-                var data = buildingsList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
-                $scope.gridOptions.totalItems = buildingsList.length;
+                var data = topsList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
+                $scope.gridOptions.totalItems = topsList.length;
                 // var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
                 var firstRow = 0;
                 $scope.gridOptions.data = data;
                 // });
 
             };
+
+            getPage();
 
             //angular-form
             $scope.schema = {
@@ -137,12 +150,6 @@ angular.module('angularTokenAuthApp.controllers')
                         title: "Description",
                         required: true
                     },
-                    CompanyID: {
-                        title: "Company ID",
-                        type: "string",
-                        required: true
-                        // description: "This one is using UI-select, single selection. Fetches lookup values(titleMap) from a callback."
-                    },
                     // uiselect: {
                     //     title: "Single select for UI-select",
                     //     type: "string",
@@ -155,16 +162,6 @@ angular.module('angularTokenAuthApp.controllers')
                     "key": "Name",
                 }, {
                     "key": "Description",
-                }, {
-                    "key": "CompanyID",
-                    "type": "uiselect",
-                    "placeholder": "Choose a Company",
-                    "options": {
-                        "callback": "callBackSD"
-                    },
-                    onChange: function(modelValue, form) {
-
-                    }
                 },
                 //  {
                 //     "key": "uiselect",
@@ -245,7 +242,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/webapi/addBuilding" : "/webapi/updateBuilding"
+                var url = action == "New" ? "/api/addBuilding" : "/api/updateBuilding"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -253,16 +250,14 @@ angular.module('angularTokenAuthApp.controllers')
                         url: url,
                         data: $scope.model
                     })
-                       .then(function(data) {
+                        .then(function(data) {
                             console.log(data.data);
                             if (data.data.result == 'success') {
                                 if (action == "New") {
-                                    getNamefromID();
                                     $scope.gridOptions.data.push($scope.model);
                                 } else {
                                     var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
                                     console.log(index);
-                                    geNamefromID();
                                     $scope.gridOptions.data.splice(index, 1, $scope.model);
                                 }
                                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
@@ -298,7 +293,7 @@ angular.module('angularTokenAuthApp.controllers')
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/webapi/delBuilding',
+                    url: '/api/delTop',
                     data: {
                         id: rowEntity.id
                     }
@@ -318,28 +313,6 @@ angular.module('angularTokenAuthApp.controllers')
                         console.log(err);
                     });
                 modal.close();
-            }
-
-            function join() {
-                var deferred = $q.defer();
-
-                buildingsList.map(function(item) {
-                    for (var i = 0; i < companysList.length; i++) {
-                        if (item.CompanyID == companysList[i].id) {
-                            item.Company_Name = companysList[i].Name;
-                        }
-                    }
-                });
-                deferred.resolve();
-                return deferred.promise;
-            }
-
-            function getNamefromID() {
-                for (var i = 0; i < companysList.length; i++) {
-                    if ($scope.model.CompanyID == companysList[i].id) {
-                        $scope.model.Company_Name = companysList[i].Name;
-                    }
-                }
             }
 
             function resetVar() {

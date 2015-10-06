@@ -38,19 +38,15 @@ module.exports = function(app) {
 
     TopService.add = function(obj, cb) {
         var top = new app.models.Top(obj);
-        top.save(cb);
-    }
-
-    TopService.update = function(id, obj, cb) {
-        return app.models.Top.findOneAndUpdate({
-            _id: id
-        }, obj, cb);
-    }
-
-    TopService.delete = function(id, cb) {
-        return app.models.Top.remove({
-            _id: id
-        }, cb);
+        top.save(function(err, top) {
+            if (err)
+                return res.json({
+                    result: err
+                });
+            res.json({
+                result: 'success'
+            });
+        });
     }
 
     return {
