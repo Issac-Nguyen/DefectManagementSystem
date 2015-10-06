@@ -123,8 +123,6 @@ angular.module('angularTokenAuthApp.controllers')
 
             };
 
-            // getPage();
-
             //angular-form
             $scope.schema = {
                 type: "object",

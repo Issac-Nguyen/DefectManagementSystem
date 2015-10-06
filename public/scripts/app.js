@@ -90,6 +90,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/companys'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -115,6 +121,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -149,18 +161,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/departments'
                                 })
                                 .then(function(data) {
-                                    // var returnArr = [];
-                                    // for (var i = 0; i < data.data.length; i++) {
-                                    //     var obj = {};
-                                    //     var item = data.data[i];
-                                    //     obj.name = item.Name;
-                                    //     obj.value = item.id;
-                                    //     returnArr.push(obj);
-                                    // }
+
                                     data.data.map(function(item) {
                                         item.name = item.Name;
                                         item.value = item.id;
-                                    })
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -177,6 +183,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -186,6 +198,21 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/categorys'
                                 })
                                 .then(function(data) {
+                                    return data.data;
+                                });
+                        },
+                        companys: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/companys'
+                                })
+                                .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -222,7 +249,7 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     data.data.map(function(item) {
                                         item.name = item.Name;
                                         item.value = item.id;
-                                    })
+                                    });
                                     return data.data;
                                 });
                         },
@@ -239,6 +266,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -264,6 +297,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -298,18 +337,12 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     url: '/webapi/zones'
                                 })
                                 .then(function(data) {
-                                    // var returnArr = [];
-                                    // for (var i = 0; i < data.data.length; i++) {
-                                    //     var obj = {};
-                                    //     var item = data.data[i];
-                                    //     obj.name = item.Name;
-                                    //     obj.value = item.id;
-                                    //     returnArr.push(obj);
-                                    // }
+
                                     data.data.map(function(item) {
                                         item.name = item.Name;
                                         item.value = item.id;
-                                    })
+                                    });
+
                                     return data.data;
                                 });
                         },

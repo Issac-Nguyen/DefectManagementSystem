@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('angularTokenAuthApp.controllers')
-    .controller('ZoneController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'buildings','zones',
-        function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, buildingsList, zonesList) {
+    .controller('ZoneController', ['$scope', '$state', '$q', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'buildings', 'zones',
+        function($scope, $state, $q, $http, Utils, Auth, $modal, uiGridConstants, buildingsList, zonesList) {
             // $scope.zonesList = zonesList;
             console.log(zonesList);
             var modal;
@@ -19,29 +19,11 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.callBackSD = function(options, search) {
                 if (search) {
                     console.log("Here the select lis could be narrowed using the search value: " + search.toString());
-                    return [{
-                        value: "value1",
-                        name: "text1"
-                    }, {
-                        value: "value2",
-                        name: "text2"
-                    }, {
-                        value: "value3",
-                        name: "Select dynamic!"
-                    }].filter(function(item) {
+                    return buildingsList.filter(function(item) {
                         return (item.name.search(search) > -1)
                     });
                 } else {
-                    return [{
-                        value: "value1",
-                        name: "text1"
-                    }, {
-                        value: "value2",
-                        name: "text2"
-                    }, {
-                        value: "value3",
-                        name: "Select dynamic!"
-                    }];
+                    return buildingsList;
 
                 }
                 // Note: Options is a reference to the original instance, if you change a value,
@@ -57,6 +39,10 @@ angular.module('angularTokenAuthApp.controllers')
             //   data: zonesList
             // }
 
+            var promise = join();
+            promise.then(getPage);
+
+
             $scope.gridOptions = {
                 // paginationPageSizes: [25, 50, 75],
                 // paginationPageSizes: [25, 50, 75],
@@ -71,6 +57,10 @@ angular.module('angularTokenAuthApp.controllers')
                 }, {
                     field: 'Description',
                     title: 'Description',
+                    enableSorting: true
+                }, {
+                    field: 'Building_Name',
+                    title: 'Building_Name',
                     enableSorting: true
                 }, {
                     field: 'id',
@@ -132,8 +122,6 @@ angular.module('angularTokenAuthApp.controllers')
 
             };
 
-            getPage();
-
             //angular-form
             $scope.schema = {
                 type: "object",
@@ -150,52 +138,45 @@ angular.module('angularTokenAuthApp.controllers')
                         title: "Description",
                         required: true
                     },
-                    // uiselect: {
-                    //     title: "Single select for UI-select",
-                    //     type: "string",
-                    //     description: "This one is using UI-select, single selection. Fetches lookup values(titleMap) from a callback."
-                    // },
+                    BuildingID: {
+                        title: "Building ID",
+                        type: "string",
+                        required: true
+                        // description: "This one is using UI-select, single selection. Fetches lookup values(titleMap) from a callback."
+                    },
                 }
             };
 
             $scope.form = [{
-                    "key": "Name",
-                }, {
-                    "key": "Description",
+                "key": "Name",
+            }, {
+                "key": "Description",
+            }, {
+                "key": "BuildingID",
+                "type": "uiselect",
+                "placeholder": "Choose a Building",
+                "options": {
+                    "callback": "callBackSD"
                 },
-                //  {
-                //     "key": "uiselect",
-                //     "type": "uiselect",
-                //     "placeholder": "not set yet..",
-                //     "options": {
-                //         "callback": "callBackSD"
-                //     }
-                // },
-                //  {
-                //     "key": "uiselect",
-                //     "type": "uiselect",
-                //     "placeholder": "not set yet..",
-                //     "options": {
-                //         "callback": "callBackSD"
-                //     }
-                // }, 
-                {
-                    type: "actions",
-                    items: [{
-                        type: 'submit',
-                        style: "btn-default btn-primary",
-                        title: 'Ok'
-                    }, {
-                        type: 'button',
-                        title: 'Reset',
-                        onClick: "resetForm()"
-                    }, {
-                        type: 'button',
-                        title: 'Cancel',
-                        onClick: "closeModal()"
-                    }]
+                onChange: function(modelValue, form) {
+
                 }
-            ];
+            }, {
+                type: "actions",
+                items: [{
+                    type: 'submit',
+                    style: "btn-default btn-primary",
+                    title: 'Ok'
+                }, {
+                    type: 'button',
+                    title: 'Reset',
+                    onClick: "resetForm()"
+                }, {
+                    type: 'button',
+                    title: 'Cancel',
+                    onClick: "closeModal()"
+                }]
+            }];
 
             $scope.model = {};
 
@@ -254,10 +235,11 @@ angular.module('angularTokenAuthApp.controllers')
                             console.log(data.data);
                             if (data.data.result == 'success') {
                                 if (action == "New") {
+                                    getNamefromID();
                                     $scope.gridOptions.data.push($scope.model);
                                 } else {
                                     var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
-                                    console.log(index);
+                                    getNamefromID();
                                     $scope.gridOptions.data.splice(index, 1, $scope.model);
                                 }
                                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
@@ -313,6 +295,28 @@ angular.module('angularTokenAuthApp.controllers')
                         console.log(err);
                     });
                 modal.close();
+            }
+
+            function join() {
+                var deferred = $q.defer();
+
+                zonesList.map(function(item) {
+                    for (var i = 0; i < buildingsList.length; i++) {
+                        if (item.BuildingID == buildingsList[i].id) {
+                            item.Building_Name = buildingsList[i].Name;
+                        }
+                    }
+                });
+                deferred.resolve();
+                return deferred.promise;
+            }
+
+            function getNamefromID() {
+                for (var i = 0; i < buildingsList.length; i++) {
+                    if ($scope.model.BuildingID == buildingsList[i].id) {
+                        $scope.model.Building_Name = buildingsList[i].Name;
+                    }
+                }
             }
 
             function resetVar() {

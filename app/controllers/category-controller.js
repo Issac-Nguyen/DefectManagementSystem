@@ -1,40 +1,51 @@
 'use strict';
 var lodash = require('lodash');
 module.exports = function(app) {
-	var CategoryController = {};
-	var CategoryService = app.services.Category;
+    var CategoryController = {};
+    var CategoryService = app.services.Category;
 
-	CategoryController.findByCategoryID = function(req, res) {
-		CategoryService.findByID(req.params.Id, function(err, category) {
-			if (err) {
-				return res.json(err);
-			}
-			return res.json(category);
-		});
-	};
-
-    CategoryController.findAll = function(req, res) {
-        CategoryService.findAll(function(err, categorys) {
+    CategoryController.findByCategoryID = function(req, res) {
+        CategoryService.findByID(req.params.Id, function(err, category) {
             if (err) {
                 return res.json(err);
             }
-            return res.json(categorys);
+            return res.json(category);
         });
     };
 
-	CategoryController.findByID = function(id, callback) {
-		CategoryService.findByID(id, callback);
-	};
+    CategoryController.findAll = function(req, res) {
+        var params = req.query;
+        if (params) {
+            console.log(params);
+            CategoryService.findAllWithParams(params, function(err, categorys) {
+                if (err) {
+                    return res.json(err);
+                }
+                return res.json(categorys);
+            });
+        } else {
+            CategoryService.findAll(function(err, categorys) {
+                if (err) {
+                    return res.json(err);
+                }
+                return res.json(categorys);
+            });
+        }
+    };
 
-	CategoryController.findAllWithCallback = function(callback) {
-		CategoryService.findAll(callback);
-	};
+    CategoryController.findByID = function(id, callback) {
+        CategoryService.findByID(id, callback);
+    };
 
-	CategoryController.findAllFromDateWithCallback = function(dateFrom, callback) {
-		CategoryService.findAllFromDate(dateFrom, callback);
-	};
+    CategoryController.findAllWithCallback = function(callback) {
+        CategoryService.findAll(callback);
+    };
 
-	CategoryController.checkExist = function(req, res, cb) {
+    CategoryController.findAllFromDateWithCallback = function(dateFrom, callback) {
+        CategoryService.findAllFromDate(dateFrom, callback);
+    };
+
+    CategoryController.checkExist = function(req, res, cb) {
         var body = req.body;
         if (body) {
             CategoryService.checkExist(body.name,
@@ -115,5 +126,5 @@ module.exports = function(app) {
         }
     }
 
-	return CategoryController;
+    return CategoryController;
 };

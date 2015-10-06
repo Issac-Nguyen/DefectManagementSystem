@@ -16,15 +16,6 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                 sort: null
             };
 
-            //grid options
-            // $scope.gridOptions = {
-            // 	    enableFiltering: true,
-            //   onRegisterApi: function(gridApi){
-            //     $scope.gridApi = gridApi;
-            //   },
-            //   data: topsList
-            // }
-
 
             $scope.gridOptions = {
                 // paginationPageSizes: [25, 50, 75],
@@ -154,44 +145,44 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                     //     minLength: 2,
                     //     title: "Resolve Picture Size",
                     // },
-                    maxNoDefectPicture: {
+                    MaxNoDefectPicture: {
                         type: "integer",
                         minimum: 0,
                         default: 4,
                         title: "Maximum Defect Picture",
                     },
-                    maxNoResolvePicture: {
+                    MaxNoResolvedPicture: {
                         type: "integer",
                         minimum: 0,
                         default: 4,
                         title: "Maximum Resolve Picture",
                     },
-                    cameraOnly: {
+                    CameraOnly: {
                         type: "boolean",
                         default: true,
                         title: 'Only Use Camera'
                     },
-                    retrieveFromLiblary: {
+                    RetrieveFromLiblary: {
                         type: "boolean",
                         default: false,
                         title: 'Only Retrieve from Liblary'
                     },
-                    defectPictureIsNeed: {
+                    DefectPictureIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Defect Picture is need'
                     },
-                    defectDescIsNeed: {
+                    DefectDescIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Defect Description is need'
                     },
-                    resolvePictureIsNeed: {
+                    ResolvePictureIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Resolve Picture is need'
                     },
-                    resolveDescIsNeed: {
+                    ResolveDescIsNeed: {
                         type: "boolean",
                         default: false,
                         title: 'Resolve Description is need'
@@ -202,8 +193,8 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
             $scope.form = [
                 "Name",
                 // "defectPictureSize", "resolvePictureSize",
-                "maxNoDefectPicture", "maxNoResolvePicture", {
-                    key: "cameraOnly",
+                "MaxNoDefectPicture", "MaxNoResolvedPicture", {
+                    key: "CameraOnly",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -213,7 +204,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "retrieveFromLiblary",
+                    key: "RetrieveFromLiblary",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -223,7 +214,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "defectPictureIsNeed",
+                    key: "DefectPictureIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -233,7 +224,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "defectDescIsNeed",
+                    key: "DefectDescIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -243,7 +234,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "resolvePictureIsNeed",
+                    key: "ResolvePictureIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,
@@ -253,7 +244,7 @@ angular.module('angularTokenAuthApp.controllers', [ 'ui.bootstrap',])
                         name: "No"
                     }]
                 }, {
-                    key: "resolveDescIsNeed",
+                    key: "ResolveDescIsNeed",
                     type: "radios",
                     titleMap: [{
                         value: true,

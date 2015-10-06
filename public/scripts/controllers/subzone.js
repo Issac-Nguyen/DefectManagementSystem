@@ -38,7 +38,7 @@ angular.module('angularTokenAuthApp.controllers')
             //   data: subzonesList
             // }
             // 
-            var promise = joinZone();
+            var promise = join();
             promise.then(getPage);
 
             console.log(subzonesList[1]);
@@ -121,8 +121,6 @@ angular.module('angularTokenAuthApp.controllers')
                 // });
 
             };
-
-            // getPage();
 
             //angular-form
             $scope.schema = {
@@ -242,12 +240,12 @@ angular.module('angularTokenAuthApp.controllers')
                             console.log(data.data);
                             if (data.data.result == 'success') {
                                 if (action == "New") {
-                                    getZoneNamefromID();
+                                    getNamefromID();
                                     $scope.gridOptions.data.push($scope.model);
                                 } else {
                                     var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
                                     console.log(index);
-                                    getZoneNamefromID();
+                                    getNamefromID();
                                     $scope.gridOptions.data.splice(index, 1, $scope.model);
                                 }
                                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
@@ -310,7 +308,7 @@ angular.module('angularTokenAuthApp.controllers')
                 rowCopy = {};
             }
 
-            function joinZone() {
+            function join() {
                 var deferred = $q.defer();
 
                 subzonesList.map(function(item) {
@@ -328,7 +326,7 @@ angular.module('angularTokenAuthApp.controllers')
                 return deferred.promise;
             }
 
-            function getZoneNamefromID() {
+            function getNamefromID() {
                 for (var i = 0; i < zonesList.length; i++) {
                     if ($scope.model.ZoneID == zonesList[i].id) {
                         $scope.model.Zone_Name = zonesList[i].Name;
