@@ -66,16 +66,17 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.company', {
                     url: '/companys',
                     templateUrl: '/views/company.html',
-                    controller: 'HomeController',
+                    controller: 'CompanyController',
                     resolve: {
-                        tops: function($http) {
-                            return $http({
-                                    method: 'GET',
-                                    url: '/webapi/tops'
-                                })
-                                .then(function(data) {
-                                    return data.data;
-                                });
+                        companys: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/companys'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
                         },
                     }
                 })
@@ -84,53 +85,93 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                     templateUrl: '/views/building.html',
                     controller: 'BuildingController',
                     resolve: {
-                        tops: function($http) {
+                        companys: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/buildings'
+                                    url: '/webapi/companys'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
+                        },
+                        buildings: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/buildings'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
                         },
                     }
                 })
                 .state('user.department', {
                     url: '/department',
                     templateUrl: '/views/department.html',
-                    controller: 'HomeController',
+                    controller: 'DepartmentController',
                     resolve: {
-                        tops: function($http) {
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
+                        },
+                        departments: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/departments'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
                         },
                     }
                 })
                 .state('user.subDepartment', {
                     url: '/sub-department',
                     templateUrl: '/views/subdepartment.html',
-                    controller: 'HomeController',
+                    controller: 'SubDepartmentController',
                     resolve: {
-                        tops: function($http) {
+                        subdepartments: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/subdepartments'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
+                        },
+                        departments: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/departments'
                                 })
                                 .then(function(data) {
-                                    var returnArr = [];
-                                    for (var i = 0; i < data.data.length; i++) {
-                                        var obj = {};
-                                        var item = data.data[i];
-                                        obj.name = item.Name;
-                                        obj.value = item.id;
-                                        returnArr.push(obj);
-                                    }
-                                    return returnArr;
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
+                                    return data.data;
                                 });
                         },
                     }
@@ -140,12 +181,43 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                     templateUrl: '/views/category.html',
                     controller: 'CategoryController',
                     resolve: {
-                        categorys: function($http) {
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/categorys'
+                                    url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
+                                    return data.data;
+                                });
+                        },
+                        categorys: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/categorys'
+                            //     })
+                            //     .then(function(data) {
+                            //         return [];
+                            //     });
+                            return [];
+                        },
+                        companys: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/companys'
+                                })
+                                .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
@@ -157,13 +229,14 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                     controller: 'SubCategoryController',
                     resolve: {
                         subcategorys: function($http) {
-                            return $http({
-                                    method: 'GET',
-                                    url: '/webapi/subcategorys'
-                                })
-                                .then(function(data) {
-                                    return data.data;
-                                });
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/subcategorys'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
                         },
                         categorys: function($http) {
                             return $http({
@@ -182,7 +255,7 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                     data.data.map(function(item) {
                                         item.name = item.Name;
                                         item.value = item.id;
-                                    })
+                                    });
                                     return data.data;
                                 });
                         },
@@ -191,62 +264,146 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                 .state('user.floor', {
                     url: '/floor',
                     templateUrl: '/views/floor.html',
-                    controller: 'HomeController',
+                    controller: 'FloorController',
                     resolve: {
-                        tops: function($http) {
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
+                        },
+                        floors: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/floors'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
                         },
                     }
                 })
                 .state('user.zone', {
                     url: '/zone',
                     templateUrl: '/views/zone.html',
-                    controller: 'HomeController',
+                    controller: 'ZoneController',
                     resolve: {
-                        tops: function($http) {
+                        buildings: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/buildings'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
+                        },
+                        zones: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/zones'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
                         },
                     }
                 })
                 .state('user.subZone', {
                     url: '/sub-zone',
                     templateUrl: '/views/subzone.html',
-                    controller: 'HomeController',
+                    controller: 'SubZoneController',
                     resolve: {
-                        tops: function($http) {
+                        subzones: function($http) {
+                            // return $http({
+                            //         method: 'GET',
+                            //         url: '/webapi/subzones'
+                            //     })
+                            //     .then(function(data) {
+                            //         return data.data;
+                            //     });
+                            return [];
+                        },
+                        zones: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/zones'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
                                     return data.data;
                                 });
                         },
                     }
                 })
                 .state('user.technician', {
-                    url: '/buildings',
+                    url: '/technicians',
                     templateUrl: '/views/technician.html',
-                    controller: 'HomeController',
+                    controller: 'TechnicianController',
                     resolve: {
-                        tops: function($http) {
+                        technicians: function() {
+                            return [];
+                        },
+                        companys: function($http) {
                             return $http({
                                     method: 'GET',
-                                    url: '/webapi/tops'
+                                    url: '/webapi/companys'
                                 })
                                 .then(function(data) {
+
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
+                                    return data.data;
+                                });
+                        },
+                        buildings: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/buildings'
+                                })
+                                .then(function(data) {
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
+
+                                    return data.data;
+                                });
+                        },
+                        categorys: function($http) {
+                            return $http({
+                                    method: 'GET',
+                                    url: '/webapi/categorys'
+                                })
+                                .then(function(data) {
+                                    data.data.map(function(item) {
+                                        item.name = item.Name;
+                                        item.value = item.id;
+                                    });
                                     return data.data;
                                 });
                         },

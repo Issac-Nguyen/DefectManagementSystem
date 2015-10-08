@@ -1,10 +1,12 @@
 'use strict';
 
 angular.module('angularTokenAuthApp.controllers')
-    .controller('BuildingController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'tops',
-        function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, topsList) {
-            // $scope.topsList = topsList;
-            console.log(topsList);
+    .controller('BuildingController', ['$scope', '$state', '$http', '$q', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'companys', 'buildings',
+        function($scope, $state, $http, $q, Utils, Auth, $modal, uiGridConstants, companysList, buildingsList) {
+            var propertiesGrid = {
+                pageSize: 2,
+                pageNumber: 1
+            };
             var modal;
             var rowEntity = {};
             var action;
@@ -19,29 +21,11 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.callBackSD = function(options, search) {
                 if (search) {
                     console.log("Here the select lis could be narrowed using the search value: " + search.toString());
-                    return [{
-                        value: "value1",
-                        name: "text1"
-                    }, {
-                        value: "value2",
-                        name: "text2"
-                    }, {
-                        value: "value3",
-                        name: "Select dynamic!"
-                    }].filter(function(item) {
+                    return companysList.filter(function(item) {
                         return (item.name.search(search) > -1)
                     });
                 } else {
-                    return [{
-                        value: "value1",
-                        name: "text1"
-                    }, {
-                        value: "value2",
-                        name: "text2"
-                    }, {
-                        value: "value3",
-                        name: "Select dynamic!"
-                    }];
+                    return companysList;
 
                 }
                 // Note: Options is a reference to the original instance, if you change a value,
@@ -54,16 +38,17 @@ angular.module('angularTokenAuthApp.controllers')
             //   onRegisterApi: function(gridApi){
             //     $scope.gridApi = gridApi;
             //   },
-            //   data: topsList
+            //   data: buildingsList
             // }
 
+            getPage();
+
             $scope.gridOptions = {
-                // paginationPageSizes: [25, 50, 75],
-                // paginationPageSizes: [25, 50, 75],
-                paginationPageSizes: [5],
+                paginationPageSizes: [2],
                 useExternalPagination: true,
                 enableFiltering: true,
-                // useExternalSorting: true,
+                useExternalFiltering: true,
+                useExternalSorting: true,
                 columnDefs: [{
                     field: 'Name',
                     title: 'Name',
@@ -71,6 +56,10 @@ angular.module('angularTokenAuthApp.controllers')
                 }, {
                     field: 'Description',
                     title: 'Description',
+                    enableSorting: true
+                }, {
+                    field: 'Company_Name',
+                    title: 'Company',
                     enableSorting: true
                 }, {
                     field: 'id',
@@ -90,49 +79,50 @@ angular.module('angularTokenAuthApp.controllers')
                 }],
                 onRegisterApi: function(gridApi) {
                     $scope.gridApi = gridApi;
-                    // $scope.gridApi.core.on.sortChanged($scope, function(grid, sortColumns) {
-                    //     if (sortColumns.length == 0) {
-                    //         paginationOptions.sort = null;
-                    //     } else {
-                    //         paginationOptions.sort = sortColumns[0].sort.direction;
-                    //     }
-                    // getPage();
-                    // });
+                    $scope.gridApi.core.on.sortChanged($scope, $scope.sortChanged);
+
+                    $scope.gridApi.core.on.filterChanged($scope, function() {
+                        var grid = this.grid;
+                        for (var i = 0; i < grid.columns.length; i++) {
+                            var item = grid.columns[i];
+                            if (propertiesGrid[item.name])
+                                delete propertiesGrid[item.name];
+                            if (item.filters[0].term) {
+                                propertiesGrid[item.name] = item.filters[0].term;
+                            }
+                        }
+                        // console.log(propertiesGrid);
+                        getPage();
+                    });
 
                     gridApi.pagination.on.paginationChanged($scope, function(newPage, pageSize) {
-                        paginationOptions.pageNumber = newPage;
-                        paginationOptions.pageSize = pageSize;
+                        propertiesGrid.pageNumber = newPage;
+                        propertiesGrid.pageSize = pageSize;
                         getPage();
                     });
                 }
             };
 
-            function getPage() {
-                var url;
-                switch (paginationOptions.sort) {
-                    case uiGridConstants.ASC:
-                        url = '/data/100_ASC.json';
-                        break;
-                    case uiGridConstants.DESC:
-                        url = '/data/100_DESC.json';
-                        break;
-                    default:
-                        url = '/data/100.json';
-                        break;
-                }
-
-                // $http.get(url)
-                // .success(function (data) {
-                var data = topsList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
-                $scope.gridOptions.totalItems = topsList.length;
-                // var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
-                var firstRow = 0;
-                $scope.gridOptions.data = data;
+             function getPage(cb) {
+                $http.get('/webapi/buildings', {
+                    params: propertiesGrid
+                })
+                    .success(function(data) {
+                        buildingsList = data.items;
+                        join();
+                        $scope.gridOptions.totalItems = data.totalItems;
+                        $scope.gridOptions.data = buildingsList;
+                        if (cb)
+                            cb();
+                    });
+                // var data = categorysList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
+                // $scope.gridOptions.totalItems = categorysList.length;
+                // // var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
+                // var firstRow = 0;
+                // $scope.gridOptions.data = data;
                 // });
 
             };
-
-            getPage();
 
             //angular-form
             $scope.schema = {
@@ -150,6 +140,12 @@ angular.module('angularTokenAuthApp.controllers')
                         title: "Description",
                         required: true
                     },
+                    CompanyID: {
+                        title: "Company ID",
+                        type: "string",
+                        required: true
+                        // description: "This one is using UI-select, single selection. Fetches lookup values(titleMap) from a callback."
+                    },
                     // uiselect: {
                     //     title: "Single select for UI-select",
                     //     type: "string",
@@ -162,6 +158,16 @@ angular.module('angularTokenAuthApp.controllers')
                     "key": "Name",
                 }, {
                     "key": "Description",
+                }, {
+                    "key": "CompanyID",
+                    "type": "uiselect",
+                    "placeholder": "Choose a Company",
+                    "options": {
+                        "callback": "callBackSD"
+                    },
+                    onChange: function(modelValue, form) {
+
+                    }
                 },
                 //  {
                 //     "key": "uiselect",
@@ -242,7 +248,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/api/addBuilding" : "/api/updateBuilding"
+                var url = action == "New" ? "/webapi/addBuilding" : "/webapi/updateBuilding"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -251,14 +257,17 @@ angular.module('angularTokenAuthApp.controllers')
                         data: $scope.model
                     })
                         .then(function(data) {
-                            console.log(data.data);
+                             console.log(data.data);
                             if (data.data.result == 'success') {
                                 if (action == "New") {
-                                    $scope.gridOptions.data.push($scope.model);
+                                    // getNamefromID();
+                                    // $scope.gridOptions.data.push($scope.model);
+                                    getPage();
                                 } else {
-                                    var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
-                                    console.log(index);
-                                    $scope.gridOptions.data.splice(index, 1, $scope.model);
+                                    // var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
+                                    // getNamefromID();
+                                    // $scope.gridOptions.data.splice(index, 1, $scope.model);
+                                    getPage();
                                 }
                                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
                                 modal.close();
@@ -293,17 +302,20 @@ angular.module('angularTokenAuthApp.controllers')
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/api/delTop',
+                    url: '/webapi/delBuilding',
                     data: {
                         id: rowEntity.id
                     }
                 })
                     .then(function(data) {
-                        console.log(data.data);
+                       console.log(data.data);
                         if (data.data.result == 'success') {
-                            var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
-                            $scope.gridOptions.data.splice(index, 1);
-                            modal.close();
+                            // var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
+                            // $scope.gridOptions.data.splice(index, 1);
+                            getPage(function() {
+                                modal.close();
+                            });
+
                         } else {
                             // $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
                             // modal.close();
@@ -313,6 +325,53 @@ angular.module('angularTokenAuthApp.controllers')
                         console.log(err);
                     });
                 modal.close();
+            }
+
+            //Sort Grid
+
+            $scope.sortChanged = function(grid, sortColumns) {
+                if (sortColumns.length === 0) {
+                    delete propertiesGrid.sortType;
+                    delete propertiesGrid.sortKey;
+                } else {
+                    switch (sortColumns[0].sort.direction) {
+                        case uiGridConstants.ASC:
+                            propertiesGrid.sortType = 'ASC';
+                            propertiesGrid.sortKey = sortColumns[0].name;
+                            break;
+                        case uiGridConstants.DESC:
+                            propertiesGrid.sortType = 'DESC';
+                            propertiesGrid.sortKey = sortColumns[0].name;
+                            break;
+                        case undefined:
+                            delete propertiesGrid.sortType;
+                            delete propertiesGrid.sortKey;
+                            break;
+                    }
+                }
+                getPage();
+            };
+
+            function join() {
+                var deferred = $q.defer();
+
+                buildingsList.map(function(item) {
+                    for (var i = 0; i < companysList.length; i++) {
+                        if (item.CompanyID == companysList[i].id) {
+                            item.Company_Name = companysList[i].Name;
+                        }
+                    }
+                });
+                deferred.resolve();
+                return deferred.promise;
+            }
+
+            function getNamefromID() {
+                for (var i = 0; i < companysList.length; i++) {
+                    if ($scope.model.CompanyID == companysList[i].id) {
+                        $scope.model.Company_Name = companysList[i].Name;
+                    }
+                }
             }
 
             function resetVar() {

@@ -4,6 +4,10 @@ angular.module('angularTokenAuthApp.controllers')
     .controller('SubCategoryController', ['$scope', '$state', '$http', "$q", 'Utils', 'Auth', '$modal', 'uiGridConstants', 'categorys', 'subcategorys',
         function($scope, $state, $http, $q, Utils, Auth, $modal, uiGridConstants, categorysList, subcategorysList) {
             // $scope.subcategorysList = subcategorysList;
+            var propertiesGrid = {
+                pageSize: 2,
+                pageNumber: 1
+            };
 
             var modal;
             var rowEntity = {};
@@ -39,18 +43,17 @@ angular.module('angularTokenAuthApp.controllers')
             //   data: subcategorysList
             // }
             // 
-            var promise = joinCategory();
+            var promise = join();
             promise.then(getPage);
-
-            console.log(subcategorysList[1]);
 
             $scope.gridOptions = {
                 // paginationPageSizes: [25, 50, 75],
                 // paginationPageSizes: [25, 50, 75],
-                paginationPageSizes: [5],
+                paginationPageSizes: [2],
                 useExternalPagination: true,
                 enableFiltering: true,
-                // useExternalSorting: true,
+                useExternalFiltering: true,
+                useExternalSorting: true,
                 columnDefs: [{
                     field: 'Name',
                     title: 'Name',
@@ -81,49 +84,76 @@ angular.module('angularTokenAuthApp.controllers')
                 }],
                 onRegisterApi: function(gridApi) {
                     $scope.gridApi = gridApi;
-                    // $scope.gridApi.core.on.sortChanged($scope, function(grid, sortColumns) {
-                    //     if (sortColumns.length == 0) {
-                    //         paginationOptions.sort = null;
-                    //     } else {
-                    //         paginationOptions.sort = sortColumns[0].sort.direction;
-                    //     }
-                    // getPage();
-                    // });
+                    $scope.gridApi.core.on.sortChanged($scope, $scope.sortChanged);
+
+                    $scope.gridApi.core.on.filterChanged($scope, function() {
+                        var grid = this.grid;
+                        for (var i = 0; i < grid.columns.length; i++) {
+                            var item = grid.columns[i];
+                            if (propertiesGrid[item.name])
+                                delete propertiesGrid[item.name];
+                            if (item.filters[0].term) {
+                                propertiesGrid[item.name] = item.filters[0].term;
+                            }
+                        }
+                        // console.log(propertiesGrid);
+                        getPage();
+                    });
 
                     gridApi.pagination.on.paginationChanged($scope, function(newPage, pageSize) {
-                        paginationOptions.pageNumber = newPage;
-                        paginationOptions.pageSize = pageSize;
+                        propertiesGrid.pageNumber = newPage;
+                        propertiesGrid.pageSize = pageSize;
                         getPage();
                     });
                 }
             };
 
-            function getPage() {
-                var url;
-                switch (paginationOptions.sort) {
-                    case uiGridConstants.ASC:
-                        url = '/data/100_ASC.json';
-                        break;
-                    case uiGridConstants.DESC:
-                        url = '/data/100_DESC.json';
-                        break;
-                    default:
-                        url = '/data/100.json';
-                        break;
-                }
+            //Sort Grid
 
-                // $http.get(url)
-                // .success(function (data) {
-                var data = subcategorysList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
-                $scope.gridOptions.totalItems = subcategorysList.length;
-                // var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
-                var firstRow = 0;
-                $scope.gridOptions.data = data;
+            $scope.sortChanged = function(grid, sortColumns) {
+                if (sortColumns.length === 0) {
+                    delete propertiesGrid.sortType;
+                    delete propertiesGrid.sortKey;
+                } else {
+                    switch (sortColumns[0].sort.direction) {
+                        case uiGridConstants.ASC:
+                            propertiesGrid.sortType = 'ASC';
+                            propertiesGrid.sortKey = sortColumns[0].name;
+                            break;
+                        case uiGridConstants.DESC:
+                            propertiesGrid.sortType = 'DESC';
+                            propertiesGrid.sortKey = sortColumns[0].name;
+                            break;
+                        case undefined:
+                            delete propertiesGrid.sortType;
+                            delete propertiesGrid.sortKey;
+                            break;
+                    }
+                }
+                getPage();
+            };
+
+            function getPage(cb) {
+                
+                $http.get('/webapi/subcategorys', {
+                    params: propertiesGrid
+                })
+                    .success(function(data) {
+                        subcategorysList = data.items;
+                        join();
+                        $scope.gridOptions.totalItems = data.totalItems;
+                        $scope.gridOptions.data = subcategorysList;
+                        if(cb)
+                            cb();
+                    });
+                // var data = categorysList.splice(paginationOptions.pageNumber - 1, paginationOptions.pageSize);
+                // $scope.gridOptions.totalItems = categorysList.length;
+                // // var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
+                // var firstRow = 0;
+                // $scope.gridOptions.data = data;
                 // });
 
             };
-
-            // getPage();
 
             //angular-form
             $scope.schema = {
@@ -231,7 +261,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
-                var url = action == "New" ? "/api/addSubCategory" : "/api/updateSubCategory"
+                var url = action == "New" ? "/webapi/addSubCategory" : "/webapi/updateSubCategory"
                 if (form.$valid) {
                     console.log('valid');
                     $http({
@@ -242,17 +272,22 @@ angular.module('angularTokenAuthApp.controllers')
                         .then(function(data) {
                             console.log(data.data);
                             if (data.data.result == 'success') {
-                                if (action == "New") {
-                                    getCategoryNamefromID();
-                                    $scope.gridOptions.data.push($scope.model);
-                                } else {
-                                    var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
-                                    console.log(index);
-                                    getCategoryNamefromID();
-                                    $scope.gridOptions.data.splice(index, 1, $scope.model);
-                                }
-                                $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
-                                modal.close();
+                                // if (action == "New") {
+                                // getCategoryNamefromID();
+                                // $scope.gridOptions.data.push($scope.model);
+                                // getPage();
+                                // } else {
+                                // var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
+                                // console.log(index);
+                                // getCategoryNamefromID();
+                                // $scope.gridOptions.data.splice(index, 1, $scope.model);
+                                
+                                getPage(function() {
+                                    $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
+                                    modal.close();
+                                });
+                                // }
+
                             } else {
                                 // $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
                                 // modal.close();
@@ -270,7 +305,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.deleteRow = function(grid, row) {
                 rowEntity = row.entity;
-                $scope.HeaderModal = 'Delete Category';
+                $scope.HeaderModal = 'Delete Sub-Category';
                 modal = $modal.open({
                     animation: true,
                     templateUrl: "ModalDel.html",
@@ -284,7 +319,7 @@ angular.module('angularTokenAuthApp.controllers')
                 console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
-                    url: '/api/delTop',
+                    url: '/webapi/delSubCategory',
                     data: {
                         id: rowEntity.id
                     }
@@ -292,9 +327,11 @@ angular.module('angularTokenAuthApp.controllers')
                     .then(function(data) {
                         console.log(data.data);
                         if (data.data.result == 'success') {
-                            var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
-                            $scope.gridOptions.data.splice(index, 1);
-                            modal.close();
+                            // var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
+                            // $scope.gridOptions.data.splice(index, 1);
+                            getPage(function() {
+                                modal.close();
+                            });
                         } else {
                             // $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
                             // modal.close();
@@ -311,7 +348,7 @@ angular.module('angularTokenAuthApp.controllers')
                 rowCopy = {};
             }
 
-            function joinCategory() {
+            function join() {
                 var deferred = $q.defer();
 
 
@@ -326,7 +363,7 @@ angular.module('angularTokenAuthApp.controllers')
                 return deferred.promise;
             }
 
-            function getCategoryNamefromID() {
+            function getNamefromID() {
                 for (var i = 0; i < categorysList.length; i++) {
                     if ($scope.model.CategoryID == categorysList[i].id) {
                         $scope.model.Category_Name = categorysList[i].Name;

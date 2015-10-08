@@ -23,3 +23,20 @@ h1, h2, h3 {
 .fade.ng-enter.ng-enter-active {
   opacity:1;
 }
+
+.modalheight {
+	max-height: 600px !important;
+	overflow: auto;
+}
+
+.picker__holder {
+	overflow-y: hidden !important;
+}
+
+.modal-open .modal,.btn:focus{
+    outline:none!important
+}
+
+div:focus {
+    outline: none;
+}

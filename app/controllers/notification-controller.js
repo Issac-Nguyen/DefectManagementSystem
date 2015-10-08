@@ -25,6 +25,12 @@ module.exports = function(app) {
     var notificationObj = {};
     notificationObj.sendNotification = function(platform, type, token, obj, cb) {
         console.log('platform: ' + platform + ' \n type: ' + type + ' \n token: ' + token + '\n obj: ' + JSON.stringify(obj));
+        if (token == '') {
+            if (cb)
+                return cb();
+            else
+                return;
+        }
         var note = new apn.Notification();
         if (platform == 'iOS') {
             var myDevice = new apn.Device(token);

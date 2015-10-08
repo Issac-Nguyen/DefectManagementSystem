@@ -20,7 +20,7 @@ var BuildingSchema = new Schema({
 	Address: {
 		type: String,
 		index: true,
-		required: true
+		// required: true
 	},
 	RegisterOn: {
 		type: Date,

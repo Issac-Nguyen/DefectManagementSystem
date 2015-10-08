@@ -14,7 +14,7 @@ var CompanySchema = new Schema({
 	},
 	Address: {
 		type: String,
-		required: true
+		// required: true
 	},
 	RegisterOn: {
 		type: Date,
@@ -108,7 +108,7 @@ var CompanySchema = new Schema({
 // };
 
 CompanySchema.pre('save', function(next) {
-	if (!this['CreatedOn']) {
+	if (!this.isModified()) {
         this['CreatedOn'] = this['UpdatedOn'] = new Date;
       } else if (this.isModified()) {
         this['UpdatedOn'] = new Date;

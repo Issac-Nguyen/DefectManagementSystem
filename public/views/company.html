@@ -71,6 +71,9 @@ ng-click="logout()">Log out</button> -->
 							</li>
 						</ul>
 					</li>
+					<li>
+						<a href="#"  ui-sref="user.technician">Technician</a>
+					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<p>Signed in as <a href="#"><strong>{{ user.local.email }}</strong></a></p>
@@ -92,7 +95,7 @@ ng-click="logout()">Log out</button> -->
 		</div>
 	</div>
 	<div class="row" style="margin-top: 10px">
-		<div class="col-md-12" id="table">
+		<div  id="table">
 			<div ui-grid="gridOptions" ui-grid-pagination class="table"></div>
 		</div>
 	</div>
@@ -102,7 +105,7 @@ ng-click="logout()">Log out</button> -->
 <div class="modal-header">
 					<h3 class="modal-title">{{HeaderModal}}</h3>
 </div>
-<div class="modal-body">
+<div class="modal-body modalheight">
 				<form name="formTop" sf-schema="schema" sf-form="form" sf-model="model" ng-submit="onSubmit(formTop)"></form>
 </div>
 </script>

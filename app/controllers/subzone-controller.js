@@ -1,5 +1,5 @@
 'use strict';
-var lodash = require('lodash');
+var _ = require('lodash');
 module.exports = function(app) {
     var SubZoneController = {};
     var SubZoneService = app.services.SubZone;
@@ -13,6 +13,26 @@ module.exports = function(app) {
         });
     };
 
+    SubZoneController.findAll = function(req, res) {
+        var params = req.query;
+        delete params.access_token;
+        if (!(_.isEmpty(params))) {
+            SubZoneService.findAllWithParams(params, function(err, subzones) {
+                if (err) {
+                    return res.json(err);
+                }
+                return res.json(subzones);
+            });
+        } else {
+            SubZoneService.findAll(function(err, subzones) {
+                if (err) {
+                    return res.json(err);
+                }
+                return res.json(subzones);
+            });
+        }
+    };
+
     SubZoneController.findByID = function(id, callback) {
         SubZoneService.findByID(id, callback);
     };
@@ -21,9 +41,90 @@ module.exports = function(app) {
         SubZoneService.findAll(callback);
     }
 
-	SubZoneController.findAllFromDateWithCallback = function(dateFrom, callback) {
+    SubZoneController.findAllFromDateWithCallback = function(dateFrom, callback) {
         SubZoneService.findAllFromDate(dateFrom, callback);
     }
 
-return SubZoneController;
+    SubZoneController.checkExist = function(req, res, cb) {
+        var body = req.body;
+        if (body) {
+            SubZoneService.checkExist(body.Name,
+                body.id, function(err, subzone) {
+                    if (err)
+                        return res.json({
+                            result: err
+                        });
+                    if (subzone != null)
+                        return res.json({
+                            result: 'existed'
+                        });
+                    if (cb)
+                        cb();
+                });
+        } else {
+            return res.send(500);
+        }
+    }
+
+    SubZoneController.add = function(req, res) {
+        SubZoneController.checkExist(req, res, function() {
+            var body = req.body;
+            if (body) {
+                console.log(body);
+                SubZoneService.add(body, function(err, subzone) {
+                    if (err)
+                        return res.json({
+                            result: err
+                        });
+                    res.json({
+                        result: 'success'
+                    });
+                });
+            } else {
+                return res.send(500);
+            }
+        });
+    }
+
+    SubZoneController.update = function(req, res) {
+        SubZoneController.checkExist(req, res, function() {
+            var body = req.body;
+            if (body) {
+                var id = body.id;
+                delete body.id;
+                SubZoneService.update(id, body, function(err, doc) {
+                    if (err)
+                        return res.json({
+                            result: err
+                        });
+                    console.log(doc);
+                    res.json({
+                        result: 'success'
+                    });
+                });
+            } else {
+                return res.send(500);
+            }
+        });
+    }
+
+    SubZoneController.delete = function(req, res) {
+        var body = req.body;
+        if (body) {
+            var id = body.id;
+            SubZoneService.delete(id, function(err) {
+                if (err)
+                    return res.json({
+                        result: err
+                    });
+                res.json({
+                    result: 'success'
+                });
+            })
+        } else {
+            return res.send(500);
+        }
+    }
+
+    return SubZoneController;
 };

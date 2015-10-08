@@ -1,5 +1,5 @@
 'use strict';
-var lodash = require('lodash');
+var _ = require('lodash');
 module.exports = function(app) {
     var TopController = {};
     var TopService = app.services.Top;
@@ -16,28 +16,30 @@ module.exports = function(app) {
     };
 
     TopController.findAll = function(req, res) {
-        TopService.findAll(function(err, tops) {
-            if (err) {
-                return res.json(err);
-            }
-            return res.json(tops);
-        });
-    };
-
-    TopController.add = function(req, res) {
-        TopService.findAll(function(err, tops) {
-            if (err) {
-                return res.json(err);
-            }
-            return res.json(tops);
-        });
+        var params = req.query;
+        delete params.access_token;
+        if (!(_.isEmpty(params))) {
+            TopService.findAllWithParams(params, function(err, tops) {
+                if (err) {
+                    return res.json(err);
+                }
+                return res.json(tops);
+            });
+        } else {
+            TopService.findAll(function(err, tops) {
+                if (err) {
+                    return res.json(err);
+                }
+                return res.json(tops);
+            });
+        }
     };
 
 
     TopController.findByID = function(id, callback) {
         TopService.findByID(id, callback);
     };
-
+ 
     TopController.findByName = function(name, callback) {
         TopService.findByName(name, callback);
     }
@@ -53,7 +55,7 @@ module.exports = function(app) {
     TopController.checkExist = function(req, res, cb) {
         var body = req.body;
         if (body) {
-            TopService.checkExist(body.name,
+            TopService.checkExist(body.Name,
                 body.id, function(err, top) {
                     if (err)
                         return res.json({
@@ -75,8 +77,8 @@ module.exports = function(app) {
         TopController.checkExist(req, res, function() {
             var body = req.body;
             if (body) {
-                var top = new Top(body);
-                top.save(function(err, top) {
+                console.log(body);
+                TopService.add(body, function(err, top) {
                     if (err)
                         return res.json({
                             result: err
@@ -88,19 +90,16 @@ module.exports = function(app) {
             } else {
                 return res.send(500);
             }
-        })
-
+        });
     }
 
-    function update(req, res) {
-        checkExist(req, res, function() {
+    TopController.update = function(req, res) {
+        TopController.checkExist(req, res, function() {
             var body = req.body;
             if (body) {
                 var id = body.id;
                 delete body.id;
-                Top.findOneAndUpdate({
-                    _id: id
-                }, body, function(err, doc) {
+                TopService.update(id, body, function(err, doc) {
                     if (err)
                         return res.json({
                             result: err
@@ -114,16 +113,13 @@ module.exports = function(app) {
                 return res.send(500);
             }
         });
-
     }
 
-    function del(req, res) {
+    TopController.delete = function(req, res) {
         var body = req.body;
         if (body) {
             var id = body.id;
-            Top.remove({
-                _id: id
-            }, function(err) {
+            TopService.delete(id, function(err) {
                 if (err)
                     return res.json({
                         result: err

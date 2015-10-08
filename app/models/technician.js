@@ -22,10 +22,10 @@ var TechnicianSchema = new Schema({
     Platform: {
         type: String
     },
-    BuildingID: {
-        type: ObjectId,
-        required: true
-    },
+    // BuildingID: {
+    //     type: ObjectId,
+    //     required: true
+    // },
     CompanyID: {
         type: ObjectId,
         required: true
@@ -37,6 +37,7 @@ var TechnicianSchema = new Schema({
     },
     Username: {
         type: String,
+        required: true,
     },
     // Password: {
     // 	type: String,
