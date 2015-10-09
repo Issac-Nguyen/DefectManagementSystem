@@ -142,7 +142,7 @@ angular.module('angularTokenAuthApp.controllers')
                 })
                     .success(function(data) {
                         techniciansList = data.items;
-                        // join();
+                        join();
                         $scope.gridOptions.totalItems = data.totalItems;
                         $scope.gridOptions.data = techniciansList;
                         if (cb)
@@ -160,6 +160,12 @@ angular.module('angularTokenAuthApp.controllers')
                         title: "Username",
                         required: true
                     },
+                    hashedPassword: {
+                        type: "string",
+                        minLength: 1,
+                        title: "Password",
+                        required: true
+                    },
                     CompanyID: {
                         type: "string",
                         title: "Company",
@@ -169,6 +175,8 @@ angular.module('angularTokenAuthApp.controllers')
                         type: "string",
                         // minLength: 1,
                         title: "Email",
+                        "pattern": "^\\S+@\\S+$",
+                        validationMessage: "Not a valid Email"
                     },
                     ContactNo: {
                         type: "string",
@@ -189,6 +197,8 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.form = [{
                 "key": "Username",
             }, {
+                "key": "hashedPassword",
+            },{
                 "key": "CompanyID",
                 "type": "uiselect",
                 "placeholder": "Choose a Company",
@@ -265,6 +275,9 @@ angular.module('angularTokenAuthApp.controllers')
                 angular.copy(row.entity, rowCopy);
                 // $scope.model = row.entity;
                 $scope.model = rowEntity
+                categorysListTemp = categorysList.filter(function(item) {
+                    return (item.CompanyID.search($scope.model.CompanyID) > -1 && item.value.search($scope.model.CategoryList) == -1) || item.CompanyID == "";
+                });
                 action = "Edit";
                 openModal();
             }
@@ -392,11 +405,11 @@ angular.module('angularTokenAuthApp.controllers')
                 var deferred = $q.defer();
 
                 techniciansList.map(function(item) {
-                    // for (var i = 0; i < buildingsList.length; i++) {
-                    //     if (item.BuildingID == buildingsList[i].id) {
-                    //         item.Building_Name = buildingsList[i].Name;
-                    //     }
-                    // }
+                    for (var i = 0; i < companysList.length; i++) {
+                        if (item.CompanyID == companysList[i].id) {
+                            item.Company_Name = companysList[i].Name;
+                        }
+                    }
                 });
                 deferred.resolve();
                 return deferred.promise;
@@ -416,7 +429,7 @@ angular.module('angularTokenAuthApp.controllers')
             }
 
             function refreshSelect(formCtr, modelName) {
-                formCtr.options.scope.select_model.selected = undefined;
+                formCtr.options.scope.select_model.selected = "";
                 formCtr.options.scope.populateTitleMap($scope.form[3]);
                 if ($scope.model[modelName])
                     delete $scope.model[modelName];
@@ -432,7 +445,7 @@ angular.module('angularTokenAuthApp.controllers')
                 if ($scope.model[modelName])
                     $scope.model[modelName] = [];
 
-                if(arrayItem) {
+                if (arrayItem) {
                     arrayItem = [];
                     formCtr.titleMap = arrayItem;
                 }
