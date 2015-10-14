@@ -3,12 +3,12 @@
 <div class="well center-block" style="width: 500px">
   <h2>Please Sign In</h2>
   <form name="loginForm" novalidate ng-submit="signin();">
-    <label>Email: </label>
-    <input name="email" 
+    <label>Username: </label>
+    <input name="Username" 
            class="form-control" 
-           type="email" 
-           ng-model="signinData.email"
-           placeholder="Email" 
+           type="text" 
+           ng-model="signinData.username"
+           placeholder="Username" 
            required> 
 
     <label>Password: </label>
@@ -19,12 +19,6 @@
            placeholder="Password" 
            required> 
     <br>
-    <div ng-show="loginForm.email.$invalid && loginForm.email.$dirty">
-      <p ng-show="loginForm.email.$error.email"
-         style="padding:5px" class="bg-danger">Your email is not valid</p>
-      <p ng-show="loginForm.email.$error.required"
-         style="padding:5px" class="bg-danger">Your email is required</p>
-    </div>
     <div ng-show="loginForm.password.$invalid && loginForm.password.$dirty">
       <p ng-show="loginForm.password.$error.required"
          style="padding:5px" class="bg-danger">Your password is required</p>
@@ -37,12 +31,4 @@
            value="Sign In"
            ng-disabled="loginForm.$invalid"> 
   </form>
-  <h5 class="text-center"> or </h5>
- <!--  <button class="btn btn-primary btn-block"
-      ng-click="signinWithFacebook()">
-    Sign In With Facebook
-  </button> -->
- <p class="text-center">
-    <a ng-href="/register">Register if you don't hava an account</a>
-  </p>
 </div>

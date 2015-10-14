@@ -1,0 +1,197 @@
+<!-- <h1>User Home Page</h1>
+<h4>Logged in user</h4>
+<p> <strong>Email: </strong> {{ user.local.email }}</p>
+<p> <strong>Facebook Id: </strong> {{ user.facebook.id }}</p>
+<p> <strong>Access Token: </strong> {{ user.access_token }} </p>
+<button class="btn btn-md btn-primary"
+ng-click="logout()">Log out</button> -->
+<div id="wrapper">
+	<div class="overlay"></div>
+	<!-- Sidebar -->
+	<nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+		<ul class="nav sidebar-nav">
+			<li class="sidebar-brand">
+				<a href="#">
+					{{ model.local.username }}
+				</a>
+			</li>
+			<li>
+				<a ui-sref="user.top">Manage</a>
+			</li>
+			<li>
+				<a href="#">Reports</a>
+			</li>
+			<!-- <li>
+						<a href="#">Events</a>
+			</li>
+			<li>
+						<a href="#">Team</a>
+			</li> -->
+			<!-- <li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Works <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+									<li class="dropdown-header">Dropdown heading</li>
+									<li><a href="#">Action</a></li>
+									<li><a href="#">Another action</a></li>
+									<li><a href="#">Something else here</a></li>
+									<li><a href="#">Separated link</a></li>
+									<li><a href="#">One more separated link</a></li>
+						</ul>
+			</li> -->
+			<!-- <li>
+						<a href="#">Services</a>
+			</li> -->
+			<li>
+				<a ui-sref="user.userAdmin">User</a>
+			</li>
+			<li>
+				<a href="#" ng-click="logout()">Log out</a>
+			</li>
+		</ul>
+	</nav>
+	<!-- /#sidebar-wrapper -->
+	<!-- Page Content -->
+	<div id="page-content-wrapper">
+		<div class="container-fluid">
+			<div class="row" style="background: rgba(138, 134, 134, 0.34);">
+				<div class="col-md-12 navbar">
+					<button type="button" class="hamburger is-closed" data-toggle="offcanvas">
+					<span class="hamb-top"></span>
+					<span class="hamb-middle"></span>
+					<span class="hamb-bottom"></span>
+					</button>
+					<!-- <img alt="Bootstrap Image Preview" src="http://lorempixel.com/140/140/" /> -->
+					<h2 style="display: inline-block; margin-left: 100px">
+					Defect Management System
+					</h2>
+				</div>
+			</div>
+			<div class="row">
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
+				
+				
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h3 class="panel-title">{{model.local.username}}</h3>
+					</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-3 col-lg-3 " align="center"> <img alt="User Pic" src="img/user-placeholder.png"> </div>
+							
+							<!--<div class="col-xs-10 col-sm-10 hidden-md hidden-lg"> <br>
+									<dl>
+											<dt>DEPARTMENT:</dt>
+											<dd>Administrator</dd>
+											<dt>HIRE DATE</dt>
+											<dd>11/12/2013</dd>
+											<dt>DATE OF BIRTH</dt>
+											<dd>11/12/2013</dd>
+											<dt>GENDER</dt>
+											<dd>Male</dd>
+									</dl>
+							</div>-->
+							<div class=" col-md-9 col-lg-9 ">
+								<form>
+									<table class="table table-user-information">
+										<tbody>
+											<tr>
+												<td>Username:</td>
+												<td>{{model.local.username}}</td>
+											</tr>
+											<tr>
+												<td>Password:</td>
+												<td><input type="password" ng-model="model.local.password"class="form-control" name="Username" />
+											</tr>
+											
+										</tbody>
+									</table>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<a data-original-title="Broadcast Message" style="opacity: 0" data-toggle="tooltip" type="button" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-envelope"></i></a>
+						<span class="pull-right">
+							<a href="#" data-original-title="Edit this user" data-toggle="tooltip" type="button" class="btn btn-sm btn-warning" ng-click="saveProfile()"><i class="glyphicon glyphicon-edit"></i>&nbspSave</a>
+						</span>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /#wrapper -->
+<script>
+$(document).ready(function () {
+var trigger = $('.hamburger'),
+overlay = $('.overlay'),
+isClosed = false;
+trigger.click(function () {
+hamburger_cross();
+});
+function hamburger_cross() {
+if (isClosed == true) {
+overlay.hide();
+trigger.removeClass('is-open');
+trigger.addClass('is-closed');
+isClosed = false;
+} else {
+overlay.show();
+trigger.removeClass('is-closed');
+trigger.addClass('is-open');
+isClosed = true;
+}
+}
+$('[data-toggle="offcanvas"]').click(function () {
+$('#wrapper').toggleClass('toggled');
+});
+});
+</script>
+<!-- modal for create/edit -->
+<script type="text/ng-template" id="ModalCreateEdit.html">
+<div class="modal-header">
+									<h3 class="modal-title">{{HeaderModal}}</h3>
+</div>
+<div class="modal-body">
+				<form name="formTop" sf-schema="schema" sf-form="form" sf-model="model" ng-submit="onSubmit(formTop)"></form>
+</div>
+</script>
+</div>
+<!-- Cell Template -->
+<script type="text/ng-template" id="edit-button-cell.html">
+<div class="ui-grid-cell-contents">
+	<button type="button" class="btn btn-primary btn-xs" ng-click="grid.appScope.editRow(grid, row)">
+	Edit
+	</button>
+</div>
+</script>
+<!-- Cell Template -->
+<script type="text/ng-template" id="edit-button-cell.html">
+<div class="ui-grid-cell-contents">
+	<button type="button" class="btn btn-primary btn-xs" ng-click="grid.appScope.editRow(grid, row)">
+	Edit
+	</button>
+</div>
+</script>
+<script type="text/ng-template" id="delete-button-cell.html">
+<div class="ui-grid-cell-contents">
+	<button type="button" class="btn btn-danger btn-xs" ng-click="grid.appScope.deleteRow(grid, row)">
+	Delete
+	</button>
+</div>
+</script>
+<!-- modal for delete -->
+<script type="text/ng-template" id="ModalDel.html">
+<div class="modal-header">
+				<h3 class="modal-title">{{HeaderModal}}</h3>
+</div>
+<div class="modal-body">
+					<h3>Do you want to delete? </h3>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-danger" type="button" ng-click="btnDeleteClick()">Delete</button>
+	<button class="btn btn-default" type="button" ng-click="closeModal()">Cancel</button>
+</div>
+</script>

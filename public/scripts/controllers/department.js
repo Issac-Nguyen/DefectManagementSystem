@@ -8,6 +8,7 @@ angular.module('angularTokenAuthApp.controllers')
                 pageSize: 2,
                 pageNumber: 1
             };
+            $scope.user = Auth.getUser();
 
             var modal;
             var rowEntity = {};
@@ -49,7 +50,7 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.gridOptions = {
                 // paginationPageSizes: [25, 50, 75],
                 // paginationPageSizes: [25, 50, 75],
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,
@@ -57,15 +58,18 @@ angular.module('angularTokenAuthApp.controllers')
                 columnDefs: [{
                     field: 'Name',
                     title: 'Name',
-                    enableSorting: true
+                    enableSorting: true,
+                    enableFiltering: true
                 }, {
                     field: 'Description',
                     title: 'Description',
-                    enableSorting: true
+                    enableSorting: true,
+                    enableFiltering: true
                 }, {
                     field: 'Building_Name',
                     title: 'Building_Name',
-                    enableSorting: true
+                    enableSorting: false,
+                    enableFiltering: false
                 }, {
                     field: 'id',
                     name: ' ',
@@ -218,6 +222,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.resetForm = function() {
                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
+                refreshSelect($scope.form[2], 'BuildingID');
             }
 
             $scope.onSubmit = function(form) {
@@ -285,6 +290,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.closeModal = function() {
                 modal.close();
+                $scope.resetForm();
             }
 
             $scope.deleteRow = function(grid, row) {
@@ -326,6 +332,13 @@ angular.module('angularTokenAuthApp.controllers')
                         console.log(err);
                     });
                 // modal.close();
+            }
+
+            function refreshSelect(formCtr, modelName) {
+                formCtr.options.scope.select_model.selected = "";
+                formCtr.options.scope.populateTitleMap($scope.form[2]);
+                if ($scope.model[modelName])
+                    delete $scope.model[modelName];
             }
 
             function join() {

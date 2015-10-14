@@ -56,15 +56,19 @@ var TechnicianSchema = new Schema({
     },
     TotalCloseCaseByDay: {
         type: Number,
+        default: 0
     },
     TotalCloseCaseByMonth: {
         type: Number,
+        default: 0
     },
     TotalCloseCaseByYear: {
         type: Number,
+        default: 0
     },
     TotalCloseCaseUTD: {
         type: Number,
+        default: 0
     },
     CreatedBy: {
         type: ObjectId,
@@ -85,13 +89,14 @@ var TechnicianSchema = new Schema({
     collection: 'Technician'
 });
 
-TechnicianSchema.virtual('password').set(function(password) {
+TechnicianSchema.virtual('Password').set(function(Password) {
     this.salt = (Math.random() * 1e8).toString(36).slice(0, 5);
-    this.hashedPassword = encryptPassword(password, this.salt);
+    this.hashedPassword = encryptPassword(Password, this.salt);
+    console.log(this);
 });
 
-TechnicianSchema.methods.checkPassword = function(password) {
-    return encryptPassword(password, this.salt) === this.hashedPassword;
+TechnicianSchema.methods.checkPassword = function(Password) {
+    return encryptPassword(Password, this.salt) === this.hashedPassword;
 };
 
 TechnicianSchema.pre('save', function(next) {
@@ -108,6 +113,18 @@ TechnicianSchema.set('toJSON', {
     getters: true,
     virtuals: true
 });
+
+TechnicianSchema.options.toJSON = {
+    transform: function(doc, ret, options) {
+
+        // add id feild and remove _id and __v
+        ret.id = ret._id;
+
+        delete ret._id;
+        delete ret.__v;
+        delete ret.salt;
+    }
+};
 
 TechnicianSchema.set('toObject', {
     getters: true,

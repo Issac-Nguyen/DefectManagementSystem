@@ -4,9 +4,10 @@ angular.module('angularTokenAuthApp.controllers')
     .controller('SubZoneController', ['$scope', '$state', '$http', "$q", 'Utils', 'Auth', '$modal', 'uiGridConstants', 'zones', 'subzones',
         function($scope, $state, $http, $q, Utils, Auth, $modal, uiGridConstants, zonesList, subzonesList) {
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
+             $scope.user = Auth.getUser();
 
             var modal;
             var rowEntity = {};
@@ -21,7 +22,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.callBackSD = function(options, search) {
                 if (search) {
-                    console.log("Here the select lis could be narrowed using the search value: " + search.toString());
+                    // console.log("Here the select lis could be narrowed using the search value: " + search.toString());
                     return zonesList.filter(function(item) {
                         return (item.name.search(search) > -1)
                     });
@@ -45,10 +46,10 @@ angular.module('angularTokenAuthApp.controllers')
             var promise = join();
             promise.then(getPage);
 
-            console.log(subzonesList[1]);
+            // console.log(subzonesList[1]);
 
             $scope.gridOptions = {
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,
@@ -64,7 +65,8 @@ angular.module('angularTokenAuthApp.controllers')
                 }, {
                     field: 'Zone_Name',
                     title: 'Zone',
-                    enableSorting: true
+                    enableSorting: false,
+                    enableFiltering: false
                 }, {
                     field: 'id',
                     name: ' ',
@@ -230,20 +232,21 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.resetForm = function() {
                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
+                refreshSelect($scope.form[2], 'ZoneID');
             }
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
                 var url = action == "New" ? "/webapi/addSubZone" : "/webapi/updateSubZone"
                 if (form.$valid) {
-                    console.log('valid');
+                    // console.log('valid');
                     $http({
                         method: 'POST',
                         url: url,
                         data: $scope.model
                     })
                         .then(function(data) {
-                            console.log(data.data);
+                            // console.log(data.data);
                             if (data.data.result == 'success') {
                                 if (action == "New") {
                                     // getNamefromID();
@@ -270,6 +273,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.closeModal = function() {
                 modal.close();
+                $scope.resetForm();
             }
 
             $scope.deleteRow = function(grid, row) {
@@ -285,7 +289,7 @@ angular.module('angularTokenAuthApp.controllers')
             }
 
             $scope.btnDeleteClick = function() {
-                console.log('delete ' + rowEntity.id);
+                // console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
                     url: '/webapi/delSubZone',
@@ -294,7 +298,7 @@ angular.module('angularTokenAuthApp.controllers')
                     }
                 })
                     .then(function(data) {
-                        console.log(data.data);
+                        // console.log(data.data);
                         if (data.data.result == 'success') {
                             // var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
                             // $scope.gridOptions.data.splice(index, 1);
@@ -348,10 +352,10 @@ angular.module('angularTokenAuthApp.controllers')
 
                 subzonesList.map(function(item) {
                     for (var i = 0; i < zonesList.length; i++) {
-                        console.log(i);
+                        // console.log(i);
                         if (item.ZoneID == zonesList[i].id) {
                             item.Zone_Name = zonesList[i].Name;
-                            console.log(zonesList[i]);
+                            // console.log(zonesList[i]);
 
                             break;
                         }
@@ -359,6 +363,13 @@ angular.module('angularTokenAuthApp.controllers')
                 });
                 deferred.resolve();
                 return deferred.promise;
+            }
+
+            function refreshSelect(formCtr, modelName) {
+                formCtr.options.scope.select_model.selected = "";
+                formCtr.options.scope.populateTitleMap($scope.form[2]);
+                if ($scope.model[modelName])
+                    delete $scope.model[modelName];
             }
 
             function getNamefromID() {

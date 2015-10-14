@@ -29,13 +29,6 @@ app.use(busboy());
 
 app.use(compress());
 app.use(cookieParser());
-// app.use(session({
-//     key: 'session_cookie_name',
-//     secret: 'session_cookie_secret',
-//     store: new MongoStore(environment.db),
-//     resave: true, //reserve backward compatibility
-//     saveUninitialized: true, //reserve backward compatibility
-// }));
 
 // Use helmet to secure Express headers
 app.use(helmet.xframe());
@@ -44,11 +37,7 @@ app.use(helmet.nosniff());
 app.use(helmet.ienoopen());
 app.disable('x-powered-by');
 
-// app.use('/upload/defects', express.static(environment.root + '/upload/defects'));
-// app.use(multer({dest: './upload/defects/'}).single('defectImg'));
-
 app.use(express.static(environment.root + '/public'));
-
 
 // app.use(passport.session());
 

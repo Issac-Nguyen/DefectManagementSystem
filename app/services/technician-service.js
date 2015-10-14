@@ -1,5 +1,5 @@
 'use strict';
-var lodash = require('lodash');
+var _ = require('lodash');
 module.exports = function(app) {
     var TechnicianService = {};
 
@@ -53,11 +53,31 @@ module.exports = function(app) {
     };
 
     TechnicianService.update = function(id, object, callback) {
-        return app.models.Technician.update({
-            _id: id
-        }, {
-            $set: object
-        }, callback);
+        if(object.Password == object.hashedPassword) {
+            delete object.Password;
+            delete object.hashedPassword;
+        } else {
+            delete object.hashedPassword;
+        }
+
+        console.log(object);
+
+        app.models.Technician.findOne({_id: id}, function(err, technician) {
+            if(err)
+                return callback(err);
+            if(technician == null)
+                return callback(new Error('Not Found'));
+            for(var i in object) {
+                technician[i] = object[i];
+            }
+            console.log(technician);
+            return technician.save(callback);
+        });
+        // return app.models.Technician.update({
+        //     _id: id
+        // }, {
+        //     $set: object
+        // }, callback);
     };
 
     TechnicianService.login = function(username, password, callback) {

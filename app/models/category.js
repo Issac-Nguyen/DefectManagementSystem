@@ -16,7 +16,7 @@ var CategorySchema = new Schema({
 	CompanyID: {
 		type: ObjectId,
 		index: true,
-		required: true
+		// required: true
 	},
 	Description: {
 		type: String,

@@ -12,7 +12,7 @@ var User = require('../app/models/user'),
 
 var users = [{
 	local:{
-		email: '123@abc.com',
+		username: '123@abc.com',
 		password: '123'
 	}
 }];
@@ -20,13 +20,13 @@ var users = [{
 
 async.each(users, function(user, callback) {
 	User.model.remove({
-		'local.email': user.local.email
+		'local.username': user.local.username
 	}, function(err) {
 		if (err) console.log(err);
 		var c = new User.model();
 		if(user._id)
 			c._id = user._id;
-		c.local.email = user.local.email;
+		c.local.username = user.local.username;
 		c.local.password = user.local.password;
 		c.save(function(err) {
 			if (err) console.log(err);

@@ -5,9 +5,11 @@ angular.module('angularTokenAuthApp.controllers')
         function($scope, $state, $q, $http, Utils, Auth, $modal, uiGridConstants, companysList, buildingsList, categorysList) {
             // $scope.categorysList = categorysList;
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
+
+            $scope.user = Auth.getUser();
 
             var buildingsListTemp = angular.copy(buildingsList);
             var modal;
@@ -62,7 +64,7 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.gridOptions = {
                 // paginationPageSizes: [25, 50, 75],
                 // paginationPageSizes: [25, 50, 75],
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,
@@ -74,15 +76,17 @@ angular.module('angularTokenAuthApp.controllers')
                 }, {
                     field: 'Description',
                     title: 'Description',
-                    enableSorting: true
+                    enableSorting: true,
                 }, {
                     field: 'Company_Name',
                     title: 'Company_Name',
-                    enableSorting: true
+                    enableSorting: false,
+                    enableFiltering: false,
                 }, {
                     field: 'Building_Name',
                     title: 'Building_Name',
-                    enableSorting: true
+                    enableSorting: false,
+                    enableFiltering: false,
                 }, {
                     field: 'id',
                     name: ' ',
@@ -162,19 +166,17 @@ angular.module('angularTokenAuthApp.controllers')
                         type: "string",
                         // minLength: 1,
                         title: "Description",
-                        required: true
+                        // required: true
                     },
                     CompanyID: {
                         title: "Company ID",
                         type: "string",
-                        required: true
-                        // description: "This one is using UI-select, single selection. Fetches lookup values(titleMap) from a callback."
+                        // required: true
                     },
                     BuildingID: {
                         title: "Building ID",
                         type: "string",
-                        required: true
-                        // description: "This one is using UI-select, single selection. Fetches lookup values(titleMap) from a callback."
+                        // required: true
                     },
                 }
             };
@@ -266,6 +268,8 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.resetForm = function() {
                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
+                refreshSelect($scope.form[2], 'CompanyID');
+                refreshSelect($scope.form[3], 'BuildingID');
             }
 
             $scope.onSubmit = function(form) {
@@ -306,6 +310,7 @@ angular.module('angularTokenAuthApp.controllers')
             }
 
             $scope.closeModal = function() {
+                $scope.resetForm();
                 modal.close();
             }
 

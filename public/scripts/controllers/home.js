@@ -4,9 +4,11 @@ angular.module('angularTokenAuthApp.controllers', ['ui.bootstrap', ])
     .controller('HomeController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'tops',
         function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, topsList) {
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
+
+            $scope.user = Auth.getUser();
 
             var modal;
             var rowEntity = {};
@@ -21,7 +23,7 @@ angular.module('angularTokenAuthApp.controllers', ['ui.bootstrap', ])
 
 
             $scope.gridOptions = {
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,

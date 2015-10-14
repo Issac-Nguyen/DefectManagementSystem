@@ -4,9 +4,10 @@ angular.module('angularTokenAuthApp.controllers')
     .controller('BuildingController', ['$scope', '$state', '$http', '$q', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'companys', 'buildings',
         function($scope, $state, $http, $q, Utils, Auth, $modal, uiGridConstants, companysList, buildingsList) {
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
+            $scope.user = Auth.getUser();
             var modal;
             var rowEntity = {};
             var action;
@@ -44,23 +45,55 @@ angular.module('angularTokenAuthApp.controllers')
             getPage();
 
             $scope.gridOptions = {
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,
                 useExternalSorting: true,
                 columnDefs: [{
                     field: 'Name',
-                    title: 'Name',
-                    enableSorting: true
-                }, {
-                    field: 'Description',
-                    title: 'Description',
+                    displayName: 'Name',
                     enableSorting: true
                 }, {
                     field: 'Company_Name',
-                    title: 'Company',
+                    displayName: 'Company',
+                    enableSorting: false,
+                    enableFiltering: false
+                }, {
+                    field: 'BuildingNo',
+                    displayName: 'Building No',
                     enableSorting: true
+                }, {
+                    field: 'Address',
+                    displayName: 'Address',
+                    enableSorting: true
+                }, {
+                    field: 'RegisterOn',
+                    displayName: 'Register On',
+                    enableSorting: true,
+                    cellFilter: 'dateString',
+                }, {
+                    field: 'InCharge',
+                    displayName: 'InCharge',
+                    enableSorting: true
+                }, {
+                    field: 'InChargeNo',
+                    displayName: 'InCharge No',
+                    enableSorting: true
+                }, {
+                    field: 'DateCompletedOn',
+                    displayName: 'Date Complete On',
+                    enableSorting: true,
+                    cellFilter: 'dateString',
+                }, {
+                    field: 'CompleteOn',
+                    displayName: 'Complete On',
+                    enableSorting: true,
+                    cellFilter: 'dateString',
+                }, {
+                    field: 'Remark',
+                    displayName: 'Remark',
+                    enableSorting: true,
                 }, {
                     field: 'id',
                     name: ' ',
@@ -103,7 +136,7 @@ angular.module('angularTokenAuthApp.controllers')
                 }
             };
 
-             function getPage(cb) {
+            function getPage(cb) {
                 $http.get('/webapi/buildings', {
                     params: propertiesGrid
                 })
@@ -134,17 +167,59 @@ angular.module('angularTokenAuthApp.controllers')
                         title: "Name",
                         required: true
                     },
-                    Description: {
+                    CompanyID: {
+                        title: "Company",
                         type: "string",
-                        // minLength: 1,
-                        title: "Description",
                         required: true
                     },
-                    CompanyID: {
-                        title: "Company ID",
+                    BuildingNo: {
+                        title: "Building No",
+                        type: "integer",
+                        // required: true
+                    },
+                    Address: {
+                        title: "Address",
                         type: "string",
                         required: true
-                        // description: "This one is using UI-select, single selection. Fetches lookup values(titleMap) from a callback."
+                    },
+                    RegisterOn: {
+                        type: "string",
+                        // minLength: 1,
+                        format: "date",
+                        title: "Register On",
+                        // required: true
+                    },
+                    InCharge: {
+                        type: "string",
+                        // minLength: 1,
+                        title: "InCharge",
+                        // required: true
+                    },
+                    InChargeNo: {
+                        type: "string",
+                        // minLength: 1,
+                        title: "InCharge No",
+                        // required: true
+                    },
+                    DateCompletedOn: {
+                        type: "string",
+                        // minLength: 1,
+                        format: "date",
+                        title: "Date Completed On",
+                        // required: true
+                    },
+                    CompleteOn: {
+                        type: "string",
+                        // minLength: 1,
+                        format: "date",
+                        title: "Completed On",
+                        // required: true
+                    },
+                    Remark: {
+                        type: "string",
+                        // minLength: 1,
+                        title: "Remark",
+                        // required: true
                     },
                     // uiselect: {
                     //     title: "Single select for UI-select",
@@ -155,53 +230,58 @@ angular.module('angularTokenAuthApp.controllers')
             };
 
             $scope.form = [{
-                    "key": "Name",
-                }, {
-                    "key": "Description",
-                }, {
-                    "key": "CompanyID",
-                    "type": "uiselect",
-                    "placeholder": "Choose a Company",
-                    "options": {
-                        "callback": "callBackSD"
-                    },
-                    onChange: function(modelValue, form) {
-
-                    }
+                "key": "Name",
+            }, {
+                "key": "CompanyID",
+                "type": "uiselect",
+                "placeholder": "Choose a Company",
+                "options": {
+                    "callback": "callBackSD"
                 },
-                //  {
-                //     "key": "uiselect",
-                //     "type": "uiselect",
-                //     "placeholder": "not set yet..",
-                //     "options": {
-                //         "callback": "callBackSD"
-                //     }
-                // },
-                //  {
-                //     "key": "uiselect",
-                //     "type": "uiselect",
-                //     "placeholder": "not set yet..",
-                //     "options": {
-                //         "callback": "callBackSD"
-                //     }
-                // }, 
-                {
-                    type: "actions",
-                    items: [{
-                        type: 'submit',
-                        style: "btn-default btn-primary",
-                        title: 'Ok'
-                    }, {
-                        type: 'button',
-                        title: 'Reset',
-                        onClick: "resetForm()"
-                    }, {
-                        type: 'button',
-                        title: 'Cancel',
-                        onClick: "closeModal()"
-                    }]
+                onChange: function(modelValue, form) {
+
                 }
-            ];
+            }, {
+                "key": "BuildingNo",
+            }, {
+                "key": "Address",
+            }, {
+                key: "RegisterOn",
+                "minDate": "1995-09-01",
+                "maxDate": "2999-12-31",
+                // "format": "dd-mm-yyyy"
+            }, {
+                "key": "InCharge",
+            }, {
+                "key": "InChargeNo",
+            }, {
+                key: "DateCompletedOn",
+                "minDate": "1995-09-01",
+                "maxDate": "2999-12-31",
+                // "format": "dd-mm-yyyy"
+            }, {
+                key: "CompleteOn",
+                "minDate": "1995-09-01",
+                "maxDate": "2999-12-31",
+                // "format": "dd-mm-yyyy"
+            }, {
+                "key": "Remark",
+            }, {
+                type: "actions",
+                items: [{
+                    type: 'submit',
+                    style: "btn-default btn-primary",
+                    title: 'Ok'
+                }, {
+                    type: 'button',
+                    title: 'Reset',
+                    onClick: "resetForm()"
+                }, {
+                    type: 'button',
+                    title: 'Cancel',
+                    onClick: "closeModal()"
+                }]
+            }];
 
             $scope.model = {};
 
@@ -244,6 +324,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.resetForm = function() {
                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
+                refreshSelect($scope.form[1], 'CompanyID');
             }
 
             $scope.onSubmit = function(form) {
@@ -257,7 +338,7 @@ angular.module('angularTokenAuthApp.controllers')
                         data: $scope.model
                     })
                         .then(function(data) {
-                             console.log(data.data);
+                            console.log(data.data);
                             if (data.data.result == 'success') {
                                 if (action == "New") {
                                     // getNamefromID();
@@ -284,6 +365,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.closeModal = function() {
                 modal.close();
+                $scope.resetForm();
             }
 
             $scope.deleteRow = function(grid, row) {
@@ -308,7 +390,7 @@ angular.module('angularTokenAuthApp.controllers')
                     }
                 })
                     .then(function(data) {
-                       console.log(data.data);
+                        console.log(data.data);
                         if (data.data.result == 'success') {
                             // var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
                             // $scope.gridOptions.data.splice(index, 1);
@@ -351,6 +433,13 @@ angular.module('angularTokenAuthApp.controllers')
                 }
                 getPage();
             };
+
+            function refreshSelect(formCtr, modelName) {
+                formCtr.options.scope.select_model.selected = "";
+                formCtr.options.scope.populateTitleMap($scope.form[2]);
+                if ($scope.model[modelName])
+                    delete $scope.model[modelName];
+            }
 
             function join() {
                 var deferred = $q.defer();

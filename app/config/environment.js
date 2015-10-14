@@ -24,8 +24,8 @@ var config = {
     db: {
       'driver': 'mongoose',
       'url': 'mongodb://localhost:27017/DefectSystem',
-      'username': '',
-      'password': '',
+      'username': 'mongoSuperRoot',
+      'password': 'Anything@1668',
       'db': 'token-auth',
       'newdb': 'token-auth',
       'host': '127.0.0.1'

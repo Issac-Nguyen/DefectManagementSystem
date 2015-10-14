@@ -2,7 +2,7 @@
 var lodash = require('lodash');
 module.exports = function(app) {
     var UserController = {};
-    var UserService = require('../services/user-service');
+    var UserService = app.services.User;
 
     UserController.findByUsername = function(req, res) {
         UserService.findByUsername(req.params.username, function(err, user) {
@@ -23,6 +23,10 @@ module.exports = function(app) {
 
     UserController.getMe = function(req, res) {
         UserService.getMe(req, res);
+    }
+
+    UserController.update = function(req, res) {
+        UserService.update(req, res)
     }
 
     return UserController;

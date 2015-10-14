@@ -14,7 +14,7 @@ var CompanySchema = new Schema({
 	},
 	Address: {
 		type: String,
-		// required: true
+		required: true
 	},
 	RegisterOn: {
 		type: Date,

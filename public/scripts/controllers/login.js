@@ -15,9 +15,12 @@ angular.module('angularTokenAuthApp.controllers')
     .post('/signin', $scope.signinData)
     .success(function (data, status, headers, config) {
       var user = {};
+      user.local = {};
       user.userId = data.user.id;
       user.access_token = data.access_token;
       user.role = ACCESS_LEVELS.user; 
+      user.local.username = data.user.local.username;
+      user.local.password = data.user.local.password;
       Auth.setUser(user);
       $state.go('user.top');
     })

@@ -4,11 +4,14 @@ angular.module('angularTokenAuthApp.controllers')
     .controller('TechnicianController', ['$scope', '$state', '$q', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'technicians', 'categorys', 'buildings', 'companys',
         function($scope, $state, $q, $http, Utils, Auth, $modal, uiGridConstants, techniciansList, categorysList, buildingsList, companysList) {
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
 
+            $scope.user = Auth.getUser();
+
             var categorysListTemp = [];
+            var buildingsListTemp = [];
 
             var modal;
             var rowEntity = {};
@@ -23,77 +26,108 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.callBackSD = function(options, search) {
                 if (search) {
-                    console.log("Here the select lis could be narrowed using the search value: " + search.toString());
+                    // console.log("Here the select lis could be narrowed using the search value: " + search.toString());
                     return companysList.filter(function(item) {
                         return (item.name.search(search) > -1)
                     });
                 } else {
                     return companysList;
-
                 }
-                // Note: Options is a reference to the original instance, if you change a value,
-                // that change will persist when you use this form instance again.
             };
 
 
-            $scope.callBackUI = function(options) {
+            $scope.callBackUICategory = function(options) {
+                if ($scope.HeaderModal.search('Edit') > -1) {
+                    categorysListTemp = categorysList.filter(function(item) {
+                        return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && ($scope.model.BuildingID && $scope.model.BuildingID.indexOf(item.BuildingID.search) > -1)) || item.CompanyID == "";
+                    });
+
+                } else if ($scope.HeaderModal.search('New') > -1) {
+                    categorysListTemp = categorysList.filter(function(item) {
+                        return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && ($scope.model.BuildingID && $scope.model.BuildingID.indexOf(item.BuildingID.search) > -1)) || item.CompanyID == "";
+                    });
+                }
                 return categorysListTemp;
-                // Note: Options is a reference to the original instance, if you change a value,
-                // that change will persist when you use this form instance again.
             };
 
-            // var promise = join();
-            // promise.then(getPage);
+            $scope.callBackUIBuilding = function(options) {
+                if ($scope.HeaderModal.search('Edit') > -1) {
+                    buildingsListTemp = buildingsList.filter(function(item) {
+                        return item.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1;
+                    });
+
+                } else if ($scope.HeaderModal.search('New') > -1) {
+                    buildingsListTemp = buildingsList.filter(function(item) {
+                        return item.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1;
+                    });
+                }
+                return buildingsListTemp;
+            };
+
             getPage();
 
             $scope.gridOptions = {
-                // paginationPageSizes: [25, 50, 75],
-                // paginationPageSizes: [25, 50, 75],
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,
                 useExternalSorting: true,
                 columnDefs: [{
                     field: 'Username',
-                    title: 'Username',
-                    enableSorting: true
+                    displayName: 'Username',
+                    enableSorting: true,
+                    width: 150
                 }, {
                     field: 'Company_Name',
-                    title: 'Company_Name',
-                    enableSorting: false
+                    displayName: 'Company',
+                    enableSorting: false,
+                    width: 250
                 }, {
                     field: 'Email',
-                    title: 'Email',
-                    enableSorting: true
+                    displayName: 'Email',
+                    enableSorting: true,
+                    width: 220
                 }, {
                     field: 'ContactNo',
-                    title: 'Contact No',
-                    enableSorting: true
+                    displayName: 'Contact No',
+                    enableSorting: true,
+                    width: 220
                 }, {
-                    field: 'CategoryList',
-                    title: 'Category List',
-                    enableSorting: true
+                    field: 'CategoryListName',
+                    displayName: 'Category',
+                    enableSorting: false,
+                    enableFiltering: false,
+                    width: 450
                 }, {
-                    field: 'BuildingList',
-                    title: 'Building List',
-                    enableSorting: true
+                    field: 'BuildingListName',
+                    displayName: 'Building',
+                    enableSorting: false,
+                    enableFiltering: false,
+                    width: 450
                 }, {
                     field: 'TotalCloseCaseByDay',
-                    title: 'Total Close Case By Day',
-                    enableSorting: true
+                    displayName: 'Total Close Case By Day',
+                    enableSorting: false,
+                    enableFiltering: false,
+                    width: 220
                 }, {
                     field: 'TotalCloseCaseByMonth',
-                    title: 'Total Close Case By Month',
-                    enableSorting: true
+                    displayName: 'Total Close Case By Month',
+                    enableSorting: false,
+                    enableFiltering: false,
+                    width: 220
                 }, {
                     field: 'TotalCloseCaseByYear',
-                    title: 'Total Close Case By Year',
-                    enableSorting: true
+                    displayName: 'Total Close Case By Year',
+                    enableSorting: false,
+                    enableFiltering: false,
+                    width: 220
                 }, {
                     field: 'TotalCloseCaseUTD',
-                    title: 'Total Close Case UTD',
-                    enableSorting: true
+                    displayName: 'Total Close Case UTD',
+                    enableSorting: false,
+                    enableFiltering: false,
+                    width: 220
                 }, {
                     field: 'id',
                     name: ' ',
@@ -160,7 +194,7 @@ angular.module('angularTokenAuthApp.controllers')
                         title: "Username",
                         required: true
                     },
-                    hashedPassword: {
+                    Password: {
                         type: "string",
                         minLength: 1,
                         title: "Password",
@@ -183,8 +217,16 @@ angular.module('angularTokenAuthApp.controllers')
                         // minLength: 1,
                         title: "Contact No",
                     },
+                    BuildingList: {
+                        title: "Building",
+                        type: "array",
+                        items: {
+                            type: "integer"
+                        },
+                        default: []
+                    },
                     CategoryList: {
-                        title: "Category List",
+                        title: "Category",
                         type: "array",
                         items: {
                             type: "integer"
@@ -197,8 +239,8 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.form = [{
                 "key": "Username",
             }, {
-                "key": "hashedPassword",
-            },{
+                "key": "Password",
+            }, {
                 "key": "CompanyID",
                 "type": "uiselect",
                 "placeholder": "Choose a Company",
@@ -206,26 +248,47 @@ angular.module('angularTokenAuthApp.controllers')
                     "callback": "callBackSD"
                 },
                 onChange: function(modelValue, form) {
+                    //for category
                     categorysListTemp = categorysList.filter(function(item) {
-                        return item.CompanyID.search(modelValue) > -1 || item.CompanyID == "";
+                        return (item.CompanyID.search(modelValue) > -1 && ($scope.model.BuildingID && $scope.model.BuildingID.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
                     });
-                    $scope.form[4].titleMap = categorysListTemp;
 
-                    // $scope.model.CategoryList = [];
-                    resetMulSelect($scope.form[4], 'CategoryList');
+                    //for building
+                    buildingsListTemp = buildingsList.filter(function(item) {
+                        return item.CompanyID.search(modelValue) > -1;
+                    });
 
-                    // $scope.form[4].options.scope.uiMultiSelectInitInternalModel([]);
+                    $scope.form[5].titleMap = buildingsListTemp;
+                    $scope.form[6].titleMap = categorysListTemp;
+                    resetMulSelect($scope.form[5], 'BuildingList');
+                    resetMulSelect($scope.form[6], 'CategoryList');
                 }
             }, {
                 "key": "Email",
             }, {
                 "key": "ContactNo",
             }, {
+                "key": "BuildingList",
+                "type": "uiselectmultiple",
+                "placeholder": "Choose Building",
+                onChange: function(modelValue, form) {
+                    //for category
+                    categorysListTemp = categorysList.filter(function(item) {
+                        return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && ($scope.model.BuildingID && $scope.model.BuildingID.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
+                    });
+
+                    $scope.form[6].titleMap = categorysListTemp;
+                    resetMulSelect($scope.form[6], 'CategoryList');
+                },
+                "options": {
+                    "callback": "callBackUIBuilding"
+                }
+            }, {
                 "key": "CategoryList",
                 "type": "uiselectmultiple",
                 "placeholder": "Choose Category",
                 "options": {
-                    "callback": "callBackUI"
+                    "callback": "callBackUICategory"
                 }
             }, {
                 type: "actions",
@@ -246,6 +309,12 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.model = {};
             $scope.model.CategoryList = [];
+
+            $scope.$watch('form[5].options.scope.$$childHead.$select.selected', function() {
+                // console.log('BuildingList changed');
+                if ($scope.form[5].options.scope)
+                    getTitleMapCategory($scope.form[5].options.scope.$$childHead.$select.selected);
+            });
 
             $scope.logout = function() {
                 Auth.logout();
@@ -275,9 +344,9 @@ angular.module('angularTokenAuthApp.controllers')
                 angular.copy(row.entity, rowCopy);
                 // $scope.model = row.entity;
                 $scope.model = rowEntity
-                categorysListTemp = categorysList.filter(function(item) {
-                    return (item.CompanyID.search($scope.model.CompanyID) > -1 && item.value.search($scope.model.CategoryList) == -1) || item.CompanyID == "";
-                });
+                // categorysListTemp = categorysList.filter(function(item) {
+                //     return (item.CompanyID.search($scope.model.CompanyID) > -1 && $scope.model.CategoryList.indexOf(item.value) == -1) || item.CompanyID == "";
+                // });
                 action = "Edit";
                 openModal();
             }
@@ -289,22 +358,23 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.resetForm = function() {
                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
-                refreshSelect($scope.form[1], 'CompanyID');
-                resetMulSelect($scope.form[4], 'CategoryList', categorysListTemp);
+                refreshSelect($scope.form[2], 'CompanyID');
+                resetMulSelect($scope.form[5], 'BuildingList', buildingsListTemp);
+                resetMulSelect($scope.form[6], 'CategoryList', categorysListTemp);
             }
 
             $scope.onSubmit = function(form) {
                 $scope.$broadcast('schemaFormValidate');
                 var url = action == "New" ? "/webapi/addTechnician" : "/webapi/updateTechnician"
                 if (form.$valid) {
-                    console.log('valid');
+                    // console.log('valid');
                     $http({
                         method: 'POST',
                         url: url,
                         data: $scope.model
                     })
                         .then(function(data) {
-                            console.log(data.data);
+                            // console.log(data.data);
                             if (data.data.result == 'success') {
                                 // if (action == "New") {
                                 //     getNamefromID();
@@ -357,6 +427,7 @@ angular.module('angularTokenAuthApp.controllers')
             };
 
             $scope.closeModal = function() {
+                $scope.resetForm();
                 modal.close();
             }
 
@@ -373,7 +444,7 @@ angular.module('angularTokenAuthApp.controllers')
             }
 
             $scope.btnDeleteClick = function() {
-                console.log('delete ' + rowEntity.id);
+                // console.log('delete ' + rowEntity.id);
                 $http({
                     method: 'POST',
                     url: '/webapi/delTechnician',
@@ -382,7 +453,7 @@ angular.module('angularTokenAuthApp.controllers')
                     }
                 })
                     .then(function(data) {
-                        console.log(data.data);
+                        // console.log(data.data);
                         if (data.data.result == 'success') {
                             // var index = Utils.getIndex($scope.gridOptions.data, rowEntity);
                             getPage(function() {
@@ -405,14 +476,94 @@ angular.module('angularTokenAuthApp.controllers')
                 var deferred = $q.defer();
 
                 techniciansList.map(function(item) {
+                    //join company
                     for (var i = 0; i < companysList.length; i++) {
                         if (item.CompanyID == companysList[i].id) {
                             item.Company_Name = companysList[i].Name;
                         }
                     }
+
+                    //join Category
+                    var arrCategoryListName = "";
+                    for (var i = 0; i < item.CategoryList.length; i++) {
+                        var it = item.CategoryList[i];
+                        for (var j = 0; j < categorysList.length; j++) {
+                            if (it == categorysList[j].id) {
+                                arrCategoryListName = arrCategoryListName + categorysList[j].Name + ', ';
+                                break;
+                            }
+                        }
+                    }
+                    arrCategoryListName = arrCategoryListName.substr(0, arrCategoryListName.length - 2);
+                    item.CategoryListName = arrCategoryListName;
+
+                    //join Building
+                    var arrBuildingListName = "";
+                    for (var i = 0; i < item.BuildingList.length; i++) {
+                        var it = item.BuildingList[i];
+                        for (var j = 0; j < buildingsList.length; j++) {
+                            if (it == buildingsList[j].id) {
+                                arrBuildingListName = arrBuildingListName + buildingsList[j].Name + ', ';
+                                break;
+                            }
+                        }
+                    }
+                    arrBuildingListName = arrBuildingListName.substr(0, arrBuildingListName.length - 2);
+                    item.BuildingListName = arrBuildingListName;
+
+                    item.Password = item.hashedPassword;
                 });
+
+
                 deferred.resolve();
                 return deferred.promise;
+            }
+
+            function getTitleMapCategory(arrBuilding) {
+                //for category
+                categorysListTemp = categorysList.filter(function(item) {
+                    // return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && (arrBuilding.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
+                    if (item.CompanyID == "")
+                        return true;
+                    if (!$scope.model.CompanyID)
+                        return false;
+                    if (arrBuilding.length == 0)
+                        return false;
+                    var bExisted = false;
+                    if (item.CompanyID.search($scope.model.CompanyID) > -1)
+                        bExisted = true;
+                    if (bExisted) {
+                        var ex = false;
+                        for (var i = 0; i < arrBuilding.length; i++) {
+                            var it = arrBuilding[i];
+                            if (it.value == item.BuildingID) {
+                                ex = true;
+                                break;
+                            }
+                        }
+
+                    }
+                    return bExisted && ex;
+                });
+
+                $scope.form[6].titleMap = categorysListTemp;
+
+                //remove item not in BuildingID
+                var arrNewCategory = [];
+                for (var i = 0; i < $scope.form[6].options.scope.$$childHead.$select.selected.length; i++) {
+                    var it = $scope.form[6].options.scope.$$childHead.$select.selected[i];
+                    var bExisted = false;
+                    for (var j = 0; j < arrBuilding.length; j++) {
+                        var it1 = arrBuilding[j];
+                        if (it1.value == it.BuildingID) {
+                            arrNewCategory.push(it);
+                            break;
+                        }
+                    }
+                }
+                setItemMulSelect($scope.form[6], 'CategoryList', arrNewCategory);
+
+                // resetMulSelect($scope.form[6], 'CategoryList');
             }
 
             function getNamefromID() {
@@ -430,18 +581,40 @@ angular.module('angularTokenAuthApp.controllers')
 
             function refreshSelect(formCtr, modelName) {
                 formCtr.options.scope.select_model.selected = "";
-                formCtr.options.scope.populateTitleMap($scope.form[3]);
+                formCtr.options.scope.populateTitleMap($scope.form[2]);
                 if ($scope.model[modelName])
                     delete $scope.model[modelName];
+            }
+
+            function setItemMulSelect(formCtr, modelName, arrayItem) {
+                setTimeout(function() {
+                    formCtr.options.scope.$apply(function() {
+                        formCtr.options.scope.$$childHead.$select.selected = arrayItem;
+                    });
+                }, 0);
+
+                if ($scope.model[modelName]) {
+                    $scope.model[modelName] = [];
+                    for (var i = 0; i < arrayItem; i++) {
+                        $scope.model[modelName].push(arrayItem[i].value);
+                    }
+                }
+
             }
 
             function resetMulSelect(formCtr, modelName, arrayItem) {
                 setTimeout(function() {
                     formCtr.options.scope.$apply(function() {
                         formCtr.options.scope.$$childHead.$select.selected = [];
+                        if (arrayItem) {
+                            arrayItem = [];
+                            formCtr.titleMap = arrayItem;
+                        }
                     });
                 }, 0);
 
+                // formCtr.options.scope.$$childHead.$selectMultiple.selected = undefined;
+                // formCtr.options.scope.$$childHead.$selectMultiple.refreshComponent();
                 if ($scope.model[modelName])
                     $scope.model[modelName] = [];
 

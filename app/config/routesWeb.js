@@ -101,6 +101,9 @@ module.exports = function(app) {
     GenericRouter.post('/webapi/delTechnician', AuthenticationController.requiresAuth, TechnicianController.delete);
     GenericRouter.post('/webapi/updateTechnician', AuthenticationController.requiresAuth, TechnicianController.update);
 
+    //User
+    GenericRouter.post('/webapi/updateUser', AuthenticationController.requiresAuth, UserController.update);
+
 
 
 

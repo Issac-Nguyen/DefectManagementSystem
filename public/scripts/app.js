@@ -32,11 +32,11 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                     templateUrl: '/views/partials/login.html',
                     controller: 'LoginController',
                 })
-                .state('public.register', {
-                    url: '/register',
-                    templateUrl: '/views/partials/register.html',
-                    controller: 'RegisterController'
-                });
+                // .state('public.register', {
+                //     url: '/register',
+                //     templateUrl: '/views/partials/register.html',
+                //     controller: 'RegisterController'
+                // });
 
             // Regular user routes
             $stateProvider
@@ -408,6 +408,10 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                                 });
                         },
                     }
+                }).state('user.userAdmin', {
+                    url: '/user',
+                    templateUrl: '/views/user.html',
+                    controller: 'UserController',
                 });
 
             $locationProvider.html5Mode(true);

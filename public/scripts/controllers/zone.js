@@ -4,9 +4,11 @@ angular.module('angularTokenAuthApp.controllers')
     .controller('ZoneController', ['$scope', '$state', '$q', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'buildings', 'zones',
         function($scope, $state, $q, $http, Utils, Auth, $modal, uiGridConstants, buildingsList, zonesList) {
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
+
+             $scope.user = Auth.getUser();
 
             var modal;
             var rowEntity = {};
@@ -46,7 +48,7 @@ angular.module('angularTokenAuthApp.controllers')
 
 
             $scope.gridOptions = {
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,
@@ -62,7 +64,8 @@ angular.module('angularTokenAuthApp.controllers')
                 }, {
                     field: 'Building_Name',
                     title: 'Building_Name',
-                    enableSorting: true
+                    enableSorting: false,
+                    enableFiltering: false
                 }, {
                     field: 'id',
                     name: ' ',
@@ -222,6 +225,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.resetForm = function() {
                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
+                refreshSelect($scope.form[2], 'BuildingID');
             }
 
             $scope.onSubmit = function(form) {
@@ -262,6 +266,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.closeModal = function() {
                 modal.close();
+                $scope.resetForm();
             }
 
             $scope.deleteRow = function(grid, row) {
@@ -343,6 +348,13 @@ angular.module('angularTokenAuthApp.controllers')
                 });
                 deferred.resolve();
                 return deferred.promise;
+            }
+
+            function refreshSelect(formCtr, modelName) {
+                formCtr.options.scope.select_model.selected = "";
+                formCtr.options.scope.populateTitleMap($scope.form[2]);
+                if ($scope.model[modelName])
+                    delete $scope.model[modelName];
             }
 
             function getNamefromID() {

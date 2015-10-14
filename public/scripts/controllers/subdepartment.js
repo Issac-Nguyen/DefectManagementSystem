@@ -5,9 +5,12 @@ angular.module('angularTokenAuthApp.controllers')
         function($scope, $state, $http, $q, Utils, Auth, $modal, uiGridConstants, departmentsList, subdepartmentsList) {
             // $scope.subdepartmentsList = subdepartmentsList;
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
+
+            $scope.user = Auth.getUser();
+            
             var modal;
             var rowEntity = {};
             var action;
@@ -49,7 +52,7 @@ angular.module('angularTokenAuthApp.controllers')
             console.log(subdepartmentsList[1]);
 
             $scope.gridOptions = {
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,
@@ -57,15 +60,18 @@ angular.module('angularTokenAuthApp.controllers')
                 columnDefs: [{
                     field: 'Name',
                     title: 'Name',
-                    enableSorting: true
+                    enableSorting: true,
+                    enableFiltering: true
                 }, {
                     field: 'Description',
                     title: 'Description',
-                    enableSorting: true
+                    enableSorting: true,
+                    enableFiltering: true
                 }, {
                     field: 'Department_Name',
                     title: 'Department',
-                    enableSorting: true
+                    enableSorting: false,
+                    enableFiltering: false
                 }, {
                     field: 'id',
                     name: ' ',
@@ -226,6 +232,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.resetForm = function() {
                 $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
+                refreshSelect($scope.form[2], 'DepartmentID');
             }
 
             $scope.onSubmit = function(form) {
@@ -293,6 +300,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             $scope.closeModal = function() {
                 modal.close();
+                $scope.resetForm();
             }
 
             $scope.deleteRow = function(grid, row) {
@@ -339,6 +347,13 @@ angular.module('angularTokenAuthApp.controllers')
             function resetVar() {
                 rowEntity = {};
                 rowCopy = {};
+            }
+
+            function refreshSelect(formCtr, modelName) {
+                formCtr.options.scope.select_model.selected = "";
+                formCtr.options.scope.populateTitleMap($scope.form[2]);
+                if ($scope.model[modelName])
+                    delete $scope.model[modelName];
             }
 
             function join() {

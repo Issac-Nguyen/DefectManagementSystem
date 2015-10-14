@@ -114,7 +114,7 @@ module.exports = function(app) {
                 });
             });
         } else if (req.body.grantType === 'password') {
-            if (!req.body.email) {
+            if (!req.body.username) {
                 return res.send(400, {
                     message: 'Missing email field.'
                 });
@@ -125,14 +125,14 @@ module.exports = function(app) {
                 });
             }
             User.findOne({
-                'local.email': req.body.email
+                'local.username': req.body.username
             }, function(err, user) {
                 if (err) {
                     return res.send(500, err);
                 }
                 if (!user) {
                     return res.status(401).send({
-                        message: 'Unknown email.'
+                        message: 'Unknown Username.'
                     });
                 }
                 user.comparePassword(req.body.password, function(err, isMatch) {

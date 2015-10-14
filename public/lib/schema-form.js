@@ -791,6 +791,16 @@ angular.module('schemaForm').provider('schemaForm',
     }
   };
 
+  var password = function(name, schema, options) {
+    if (stripNullType(schema.type) === 'password') {
+      var f = stdFormObj(name, schema, options);
+      f.key  = options.path;
+      f.type = 'password';
+      options.lookup[sfPathProvider.stringify(options.path)] = f;
+      return f;
+    }
+  };
+
   //default in json form for number and integer is a text field
   //input type="number" would be more suitable don't ya think?
   var number = function(name, schema, options) {
@@ -916,6 +926,7 @@ angular.module('schemaForm').provider('schemaForm',
   //Order has importance. First handler returning an form snippet will be used.
   var defaults = {
     string:  [select, text],
+    password: [password],
     object:  [fieldset],
     number:  [number],
     integer: [integer],

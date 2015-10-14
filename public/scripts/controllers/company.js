@@ -4,9 +4,12 @@ angular.module('angularTokenAuthApp.controllers')
     .controller('CompanyController', ['$scope', '$state', '$http', 'Utils', 'Auth', '$modal', 'uiGridConstants', 'companys',
         function($scope, $state, $http, Utils, Auth, $modal, uiGridConstants, companysList) {
             var propertiesGrid = {
-                pageSize: 2,
+                pageSize: 25,
                 pageNumber: 1
             };
+
+            $scope.user = Auth.getUser();
+            
             var modal;
             var rowEntity = {};
             var action;
@@ -22,7 +25,7 @@ angular.module('angularTokenAuthApp.controllers')
 
 
             $scope.gridOptions = {
-                paginationPageSizes: [2],
+                paginationPageSizes: [25],
                 useExternalPagination: true,
                 enableFiltering: true,
                 useExternalFiltering: true,

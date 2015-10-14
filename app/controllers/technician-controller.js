@@ -42,14 +42,15 @@ module.exports = function(app) {
 
     TechnicianController.checkExist = function(req, res, cb) {
         var body = req.body;
+        console.log(body);
         if (body) {
-            TechnicianService.checkExist(body.Name,
-                body.id, function(err, category) {
+            TechnicianService.checkExist(body.Username,
+                body.id, function(err, technician) {
                     if (err)
                         return res.json({
                             result: err
                         });
-                    if (category != null)
+                    if (technician != null)
                         return res.json({
                             result: 'existed'
                         });
@@ -62,10 +63,9 @@ module.exports = function(app) {
     }
 
     TechnicianController.add = function(req, res) {
-        TechnicianService.checkExist(req, res, function() {
+        TechnicianController.checkExist(req, res, function() {
             var body = req.body;
             if (body) {
-                console.log(body);
                 TechnicianService.add(body, function(err, category) {
                     if (err)
                         return res.json({
