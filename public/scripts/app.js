@@ -453,10 +453,10 @@ angular.module('angularTokenAuthApp', ['ui.router', 'ngAnimate',
                         if (Auth.isLoggedIn()) {
                             // the user is logged in, but does not have permissions
                             // to view the view (not authorized) 
-                            event.preventDefault();
+                            // event.preventDefault();
                             $state.go('user.top');
                         } else {
-                            event.preventDefault();
+                            // event.preventDefault();
                             $state.go('public.login');
                         }
                     } else if (toState.name == "public.login") {

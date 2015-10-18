@@ -3,6 +3,10 @@ var _ = require('lodash');
 module.exports = function(app) {
     var TechnicianService = {};
 
+    TechnicianService.find = function(condition, callback) {
+        return app.models.Technician.find(condition, callback);
+    };
+
     TechnicianService.findByUserName = function(username, callback) {
         return app.models.Technician.findOne({
             Username: username
@@ -53,24 +57,23 @@ module.exports = function(app) {
     };
 
     TechnicianService.update = function(id, object, callback) {
-        if(object.Password == object.hashedPassword) {
+        if (object.Password == object.hashedPassword) {
             delete object.Password;
             delete object.hashedPassword;
         } else {
             delete object.hashedPassword;
         }
 
-        console.log(object);
-
-        app.models.Technician.findOne({_id: id}, function(err, technician) {
-            if(err)
+        app.models.Technician.findOne({
+            _id: id
+        }, function(err, technician) {
+            if (err)
                 return callback(err);
-            if(technician == null)
+            if (technician == null)
                 return callback(new Error('Not Found'));
-            for(var i in object) {
+            for (var i in object) {
                 technician[i] = object[i];
             }
-            console.log(technician);
             return technician.save(callback);
         });
         // return app.models.Technician.update({
@@ -112,12 +115,27 @@ module.exports = function(app) {
         Technician.save(cb);
     }
 
-    // CategoryService.update = function(id, obj, cb) {
-    //     obj.UpdatedOn = new Date();
-    //     return app.models.Category.findOneAndUpdate({
-    //         _id: id
-    //     }, obj, cb);
-    // }
+    TechnicianService.update = function(id, obj, cb) {
+        obj.UpdatedOn = new Date();
+        return app.models.Technician.findOneAndUpdate({
+            _id: id
+        }, obj, cb);
+    }
+
+    TechnicianService.updateWithHook = function(id, obj, cb) {
+        app.models.Technician.findOne({_id: id}, function(err, doc) {
+            if(err)
+                return cb(err);
+            for(var pro in obj) {
+                doc[pro] = obj[pro];
+            }
+            doc.save(function(err, tech) {
+                if(err)
+                    return cb(err);
+                cb();
+            })
+        });
+    }
 
     TechnicianService.delete = function(id, cb) {
         return app.models.Technician.remove({

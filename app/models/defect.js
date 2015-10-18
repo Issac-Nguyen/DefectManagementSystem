@@ -135,15 +135,10 @@ var DefectSchema = new Schema({
 DefectSchema.pre('save', function(next) {
 
     if (!this['CreatedOn']) {
-        console.log('create');
         this['CreatedOn'] = this['UpdatedOn'] = new Date();
     } else if (this.isModified()) {
-        console.log('update');
         this['UpdatedOn'] = new Date();
     }
-
-    console.log('this');
-    console.log(this);
 
     next();
 });

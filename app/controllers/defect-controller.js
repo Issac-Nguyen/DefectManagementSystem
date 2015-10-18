@@ -39,20 +39,23 @@ module.exports = function(app) {
     DefectController.updateWithIDAndCallback = function(id, objSet, callback) {
         if (objSet.Arr_imageResolve) {
             objSet.Arr_imageResolve = JSON.parse(objSet.Arr_imageResolve);
-            console.log(objSet);
             for (var i = 0; i < objSet.Arr_imageResolve.length; i++) {
                 var arrResolvePicture = objSet['Arr_imageResolve'][i];
                 var ResolvedPictureList = [];
                 var ResolvedDescriptionList = [];
-                for (var j = 0; j < arrResolvePicture.length; j++) {
-                    var item = arrResolvePicture[j];
-                    ResolvedPictureList.push(item.dataURL);
-                    ResolvedDescriptionList.push(item.description);
-                }
-                objSet['ResolvedPictureList'] = ResolvedPictureList;
-                objSet['ResolvedDescriptionList'] = ResolvedDescriptionList;
+                // for (j in arrResolvePicture) {
+                //     var item = arrResolvePicture[j];
+                //     ResolvedPictureList.push(item.dataURL);
+                //     ResolvedDescriptionList.push(item.description);
+                // }
+                ResolvedPictureList.push(arrResolvePicture.dataURL);
+                ResolvedDescriptionList.push(arrResolvePicture.description);
             }
+            objSet['ResolvedPictureList'] = ResolvedPictureList;
+            objSet['ResolvedDescriptionList'] = ResolvedDescriptionList;
             delete objSet.Arr_imageResolve;
+
+            console.log(objSet);
         }
 
 
@@ -61,16 +64,16 @@ module.exports = function(app) {
 
 
     DefectController.add = function(data, callback) {
-        var defectObj = {};
+        var defectObj = data;
         defectObj['idDefect'] = data.id;
-        defectObj['BuildingID'] = data['BuildingID'];
-        defectObj['DepartmentID'] = data['DepartmentID'];
-        defectObj['SubDepartmentID'] = data['SubDepartmentID'];
-        defectObj['CategoryID'] = data['CategoryID'];
-        defectObj['SubCategoryID'] = data['SubCategoryID'];
-        defectObj['ZoneID'] = data['ZoneID'];
-        defectObj['SubZoneID'] = data['SubZoneID'];
-        defectObj['FloorID'] = data['FloorID'];
+        // defectObj['BuildingID'] = data['BuildingID'];
+        // defectObj['DepartmentID'] = data['DepartmentID'];
+        // defectObj['SubDepartmentID'] = data['SubDepartmentID'];
+        // defectObj['CategoryID'] = data['CategoryID'];
+        // defectObj['SubCategoryID'] = data['SubCategoryID'];
+        // defectObj['ZoneID'] = data['ZoneID'];
+        // defectObj['SubZoneID'] = data['SubZoneID'];
+        // defectObj['FloorID'] = data['FloorID'];
         if (data['CreatedBy']) {
             defectObj['ReportedBy'] = defectObj['CreatedBy'] = defectObj['UpdatedBy'] = data['CreatedBy'];
             // } else if (this.isModified()) {
@@ -85,7 +88,6 @@ module.exports = function(app) {
             var DefectDescriptionList = [];
             for (var i = 0; i < arrDefectPicture.length; i++) {
                 var item = arrDefectPicture[i];
-                console.log(item);
                 DefectPictureList.push(item.dataURL);
                 DefectDescriptionList.push(item.description);
             }

@@ -12,6 +12,7 @@ angular.module('angularTokenAuthApp.controllers')
 
             var categorysListTemp = [];
             var buildingsListTemp = [];
+            var watchBuildingList;
 
             var modal;
             var rowEntity = {};
@@ -23,6 +24,23 @@ angular.module('angularTokenAuthApp.controllers')
                 pageSize: 5,
                 sort: null
             };
+
+
+
+            // watchBuildingList();
+
+            function registerWatch() {
+                watchBuildingList = $scope.$watch('form[5].options.scope.$$childHead.$select.selected', function() {
+                    // console.log('BuildingList changed');
+                    if ($scope.form[5].options.scope)
+                        getTitleMapCategory($scope.form[5].options.scope.$$childHead.$select.selected);
+
+                });
+            }
+
+            function unregisterWatch() {
+                watchBuildingList();
+            }
 
             $scope.callBackSD = function(options, search) {
                 if (search) {
@@ -39,15 +57,18 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.callBackUICategory = function(options) {
                 if ($scope.HeaderModal.search('Edit') > -1) {
                     categorysListTemp = categorysList.filter(function(item) {
-                        return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && ($scope.model.BuildingID && $scope.model.BuildingID.indexOf(item.BuildingID.search) > -1)) || item.CompanyID == "";
+                        return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && ($scope.model.BuildingList && $scope.model.BuildingList.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
                     });
 
                 } else if ($scope.HeaderModal.search('New') > -1) {
                     categorysListTemp = categorysList.filter(function(item) {
-                        return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && ($scope.model.BuildingID && $scope.model.BuildingID.indexOf(item.BuildingID.search) > -1)) || item.CompanyID == "";
+                        return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && ($scope.model.BuildingID && $scope.model.BuildingList.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
                     });
                 }
+
                 return categorysListTemp;
+
+
             };
 
             $scope.callBackUIBuilding = function(options) {
@@ -223,7 +244,7 @@ angular.module('angularTokenAuthApp.controllers')
                         items: {
                             type: "integer"
                         },
-                        default: []
+                        default: [],
                     },
                     CategoryList: {
                         title: "Category",
@@ -231,7 +252,7 @@ angular.module('angularTokenAuthApp.controllers')
                         items: {
                             type: "integer"
                         },
-                        default: []
+                        default: [],
                     },
                 }
             };
@@ -250,7 +271,7 @@ angular.module('angularTokenAuthApp.controllers')
                 onChange: function(modelValue, form) {
                     //for category
                     categorysListTemp = categorysList.filter(function(item) {
-                        return (item.CompanyID.search(modelValue) > -1 && ($scope.model.BuildingID && $scope.model.BuildingID.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
+                        return (item.CompanyID.search(modelValue) > -1 && ($scope.model.BuildingList && $scope.model.BuildingList.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
                     });
 
                     //for building
@@ -279,6 +300,7 @@ angular.module('angularTokenAuthApp.controllers')
 
                     $scope.form[6].titleMap = categorysListTemp;
                     resetMulSelect($scope.form[6], 'CategoryList');
+                    console.log('changed');
                 },
                 "options": {
                     "callback": "callBackUIBuilding"
@@ -310,11 +332,7 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.model = {};
             $scope.model.CategoryList = [];
 
-            $scope.$watch('form[5].options.scope.$$childHead.$select.selected', function() {
-                // console.log('BuildingList changed');
-                if ($scope.form[5].options.scope)
-                    getTitleMapCategory($scope.form[5].options.scope.$$childHead.$select.selected);
-            });
+
 
             $scope.logout = function() {
                 Auth.logout();
@@ -328,6 +346,10 @@ angular.module('angularTokenAuthApp.controllers')
                     scope: $scope,
                     keyboard: false,
                     backdrop: 'static'
+                });
+
+                modal.opened.then(function() {
+                    setTimeout(registerWatch, 2000);
                 });
             }
 
@@ -367,7 +389,7 @@ angular.module('angularTokenAuthApp.controllers')
                 $scope.$broadcast('schemaFormValidate');
                 var url = action == "New" ? "/webapi/addTechnician" : "/webapi/updateTechnician"
                 if (form.$valid) {
-                    // console.log('valid');
+                    console.log($scope.model);
                     $http({
                         method: 'POST',
                         url: url,
@@ -387,7 +409,8 @@ angular.module('angularTokenAuthApp.controllers')
                                 // }
                                 getPage(function() {
                                     $scope.model = Utils.getDefaultValueFromSchema($scope.schema);
-                                    modal.close();
+                                    // modal.close();
+                                    $scope.closeModal();
                                 });
 
                             } else {
@@ -429,6 +452,7 @@ angular.module('angularTokenAuthApp.controllers')
             $scope.closeModal = function() {
                 $scope.resetForm();
                 modal.close();
+                unregisterWatch();
             }
 
             $scope.deleteRow = function(grid, row) {
@@ -520,6 +544,8 @@ angular.module('angularTokenAuthApp.controllers')
             }
 
             function getTitleMapCategory(arrBuilding) {
+                if (!arrBuilding || (arrBuilding.length > 0 && !arrBuilding[0]) || !($scope.form[5].titleMap || $scope.form[6].titleMap))
+                    return;
                 //for category
                 categorysListTemp = categorysList.filter(function(item) {
                     // return (($scope.model.CompanyID && item.CompanyID.search($scope.model.CompanyID) > -1) && (arrBuilding.indexOf(item.BuildingID) > -1)) || item.CompanyID == "";
@@ -527,7 +553,7 @@ angular.module('angularTokenAuthApp.controllers')
                         return true;
                     if (!$scope.model.CompanyID)
                         return false;
-                    if (arrBuilding.length == 0)
+                    if (!arrBuilding || arrBuilding.length == 0)
                         return false;
                     var bExisted = false;
                     if (item.CompanyID.search($scope.model.CompanyID) > -1)
@@ -536,7 +562,7 @@ angular.module('angularTokenAuthApp.controllers')
                         var ex = false;
                         for (var i = 0; i < arrBuilding.length; i++) {
                             var it = arrBuilding[i];
-                            if (it.value == item.BuildingID) {
+                            if (it && it.value == item.BuildingID) {
                                 ex = true;
                                 break;
                             }
@@ -550,18 +576,29 @@ angular.module('angularTokenAuthApp.controllers')
 
                 //remove item not in BuildingID
                 var arrNewCategory = [];
-                for (var i = 0; i < $scope.form[6].options.scope.$$childHead.$select.selected.length; i++) {
-                    var it = $scope.form[6].options.scope.$$childHead.$select.selected[i];
-                    var bExisted = false;
-                    for (var j = 0; j < arrBuilding.length; j++) {
-                        var it1 = arrBuilding[j];
-                        if (it1.value == it.BuildingID) {
-                            arrNewCategory.push(it);
-                            break;
+                if ($scope.form[6].options.scope.$$childHead.$select.selected) {
+                    for (var i = 0; i < $scope.form[6].options.scope.$$childHead.$select.selected.length; i++) {
+                        // if ($scope.model.CategoryList) {
+                        //     for (var i = 0; i < $scope.model.CategoryList.length; i++) {
+                        var it = $scope.form[6].options.scope.$$childHead.$select.selected[i];
+                        var temp;
+                        for (var k in categorysList) {
+                            if (categorysList[k].value == it.value) {
+                                temp = categorysList[k];
+                                break;
+                            }
+                        }
+                        var bExisted = false;
+                        for (var j = 0; j < arrBuilding.length; j++) {
+                            var it1 = arrBuilding[j];
+                            if (it1 && it1.value == temp.BuildingID) {
+                                arrNewCategory.push(it);
+                                break;
+                            }
                         }
                     }
+                    setItemMulSelect($scope.form[6], 'CategoryList', arrNewCategory);
                 }
-                setItemMulSelect($scope.form[6], 'CategoryList', arrNewCategory);
 
                 // resetMulSelect($scope.form[6], 'CategoryList');
             }
@@ -599,7 +636,6 @@ angular.module('angularTokenAuthApp.controllers')
                         $scope.model[modelName].push(arrayItem[i].value);
                     }
                 }
-
             }
 
             function resetMulSelect(formCtr, modelName, arrayItem) {

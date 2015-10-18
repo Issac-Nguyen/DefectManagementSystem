@@ -11,8 +11,6 @@ module.exports = function(app) {
 
     DefectService.add = function(data, cb) {
         var newDefect = new app.models.Defect(data);
-        console.log('new Defect');
-        console.log(newDefect);
         newDefect.save(cb);
     }
 

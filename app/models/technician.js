@@ -92,10 +92,11 @@ var TechnicianSchema = new Schema({
 TechnicianSchema.virtual('Password').set(function(Password) {
     this.salt = (Math.random() * 1e8).toString(36).slice(0, 5);
     this.hashedPassword = encryptPassword(Password, this.salt);
-    console.log(this);
 });
 
 TechnicianSchema.methods.checkPassword = function(Password) {
+    console.log(encryptPassword(Password, this.salt));
+    console.log(this.hashedPassword);
     return encryptPassword(Password, this.salt) === this.hashedPassword;
 };
 

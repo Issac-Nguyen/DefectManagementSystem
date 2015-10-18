@@ -32,7 +32,7 @@ module.exports = function(app) {
         TechnicianService.login(username, password, cb);
     }
 
-    TechnicianController.update = function(id, object, cb) {
+    TechnicianController.updateWithCallback = function(id, object, cb) {
         TechnicianService.update(id, object, cb);
     }
 
@@ -42,7 +42,6 @@ module.exports = function(app) {
 
     TechnicianController.checkExist = function(req, res, cb) {
         var body = req.body;
-        console.log(body);
         if (body) {
             TechnicianService.checkExist(body.Username,
                 body.id, function(err, technician) {
@@ -87,16 +86,40 @@ module.exports = function(app) {
             if (body) {
                 var id = body.id;
                 delete body.id;
-                TechnicianService.update(id, body, function(err, doc) {
+                delete body.Platform;
+                delete body.UUID;
+                delete body.hashedPassword;
+                delete body.TotalCloseCaseUTD;
+                delete body.TotalCloseCaseByYear;
+                delete body.TotalCloseCaseByMonth;
+                delete body.TotalCloseCaseByDay;
+                if (body.password == body.hashedPassword) {
+                    delete body.password;
+                    delete body.hashedPassword;
+                }
+
+                // if (body.Password) {
+                TechnicianService.updateWithHook(id, body, function(err, doc) {
                     if (err)
                         return res.json({
                             result: err
                         });
-                    // console.log(doc);
                     res.json({
                         result: 'success'
                     });
                 });
+                // } else {
+                //     TechnicianService.update(id, body, function(err, doc) {
+                //         if (err)
+                //             return res.json({
+                //                 result: err
+                //             });
+                //         res.json({
+                //             result: 'success'
+                //         });
+                //     });
+                // }
+
             } else {
                 return res.send(500);
             }
